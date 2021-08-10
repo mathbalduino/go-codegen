@@ -7,7 +7,7 @@ import (
 
 func TestNewGoParser(t *testing.T) {
 	t.Run("Should return errors of packages.Load", func(t *testing.T) {
-		p, e := NewGoParser("wrongPattern=", Config{}, &mockLogCLI{})
+		p, e := NewGoParser("wrongpattern=", Config{}, &mockLogCLI{})
 		if e == nil {
 			t.Fatalf("The packages.Load error was expected to be returned")
 		}

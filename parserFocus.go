@@ -103,35 +103,15 @@ func (f *ParserFocus) is(lvl focusLevel, value string) bool {
 
 	switch lvl {
 	case focusPackagePath:
-		if f.packagePath == nil {
-			return true
-		}
-		return *f.packagePath == value
-
+		return f.packagePath == nil || *f.packagePath == value
 	case focusFilePath:
-		if f.filePath == nil {
-			return true
-		}
-		return *f.filePath == value
-
+		return f.filePath == nil || *f.filePath == value
 	case focusTypeName:
-		if f.typeName == nil {
-			return true
-		}
-		return *f.typeName == value
-
+		return f.typeName == nil || *f.typeName == value
 	case focusVarName:
-		if f.varName == nil {
-			return true
-		}
-		return *f.varName == value
-
+		return f.varName == nil || *f.varName == value
 	case focusFunctionName:
-		if f.functionName == nil {
-			return true
-		}
-		return *f.functionName == value
-
+		return f.functionName == nil || *f.functionName == value
 	default:
 		panic(fmt.Errorf("unrecognizable focus: %s", lvl))
 	}
