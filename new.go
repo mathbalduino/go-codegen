@@ -5,13 +5,6 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// LogCLI is used to log the parser actions, using only
-// two levels: Debug and Error
-type LogCLI interface {
-	Debug(msgFormat string, args ...interface{}) LogCLI
-	Error(msgFormat string, args ...interface{}) LogCLI
-}
-
 // GoParser is a type that can parse
 // GO source code and iterate over the
 // parsed code

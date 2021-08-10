@@ -26,7 +26,6 @@ func packagesLoadConfig(config Config, log LogCLI) *packages.Config {
 		config.Fset = token.NewFileSet()
 	}
 
-	mode := packages.NeedImports | packages.NeedSyntax | packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo
 	return &packages.Config{
 		// Customizable configurations
 		Env:        config.Env,
@@ -36,7 +35,7 @@ func packagesLoadConfig(config Config, log LogCLI) *packages.Config {
 		Fset:       config.Fset,
 
 		// Constant values, don't exposed
-		Mode: mode,
+		Mode: packagesConfigMode,
 		Logf: func(format string, args ...interface{}) { log.Debug(format, args...) },
 
 		// Not used
@@ -45,3 +44,10 @@ func packagesLoadConfig(config Config, log LogCLI) *packages.Config {
 		Overlay:   nil,
 	}
 }
+
+const packagesConfigMode =
+	packages.NeedImports |
+	packages.NeedSyntax |
+	packages.NeedName |
+	packages.NeedTypes |
+	packages.NeedTypesInfo
