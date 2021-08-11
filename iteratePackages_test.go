@@ -15,9 +15,7 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should skip packages with error", func(t *testing.T) {
-		m := &mockLogCLI{}
-		m.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {return m}
-		m.mockError = func(msgFormat string, args ...interface{}) LogCLI {return m}
+		m := emptyMockLogCLI()
 		okPkg := "c"
 		p := &GoParser{
 			pkgs: []*packages.Package{
@@ -44,9 +42,7 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should stop iteration when the callback returns any error, forwarding the returned error", func(t *testing.T) {
-		m := &mockLogCLI{}
-		m.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {return m}
-		m.mockError = func(msgFormat string, args ...interface{}) LogCLI {return m}
+		m := emptyMockLogCLI()
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{Errors: nil},
@@ -67,14 +63,13 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should skip any package that is not the focus", func(t *testing.T) {
-		m := &mockLogCLI{}
-		m.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {return m}
-		m.mockError = func(msgFormat string, args ...interface{}) LogCLI {return m}
+		m := emptyMockLogCLI()
 		focusPkg := "focusedPkg"
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{PkgPath: "a", Errors: nil},
 				{PkgPath: focusPkg, Errors: nil},
+				{PkgPath: "b", Errors: nil},
 			},
 			log: m,
 			focus: FocusPackagePath(focusPkg),
@@ -94,10 +89,8 @@ func TestIteratePackages(t *testing.T) {
 			t.Fatalf("Expected to iterate only over the focused package")
 		}
 	})
-	t.Run("Should call the callback for every package that needs to be iterated, and return nil error", func(t *testing.T) {
-		m := &mockLogCLI{}
-		m.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {return m}
-		m.mockError = func(msgFormat string, args ...interface{}) LogCLI {return m}
+	t.Run("Should call the callback for every package that needs to be iterated and return nil error", func(t *testing.T) {
+		m := emptyMockLogCLI()
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{PkgPath: "a", Errors: nil},

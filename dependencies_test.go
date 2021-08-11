@@ -1,5 +1,12 @@
 package goParser
 
+func emptyMockLogCLI() LogCLI {
+	m := &mockLogCLI{}
+	m.mockDebug = func(msgFormat string, args ...interface{}) LogCLI { return m }
+	m.mockError = func(msgFormat string, args ...interface{}) LogCLI { return m }
+	return m
+}
+
 type mockLogCLI struct {
 	mockDebug func(msgFormat string, args ...interface{}) LogCLI
 	mockError func(msgFormat string, args ...interface{}) LogCLI
