@@ -5,4 +5,5 @@ package goParser
 type LogCLI interface {
 	Debug(msgFormat string, args ...interface{}) LogCLI
 	Error(msgFormat string, args ...interface{}) LogCLI
+	Fatal(msgFormat string, args ...interface{})
 }
