@@ -46,6 +46,9 @@ func TestIteratePackageFiles(t *testing.T) {
 		calls := 0
 		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error {
 			calls += 1
+			if fileSet.File(currFile.Pos()).Name() != focusedFile {
+				t.Fatalf("Callback was not expected to be called with non focused files")
+			}
 			return nil
 		})
 		if e != nil {

@@ -8,7 +8,7 @@ import (
 
 func TestIteratePackages(t *testing.T) {
 	t.Run("Should return nil when there are no packages", func(t *testing.T) {
-		p := &GoParser{pkgs: nil}
+		p := &GoParser{pkgs: nil, log: emptyMockLogCLI()}
 		e := p.iteratePackages(nil)
 		if e != nil {
 			t.Fatalf("Expected to be nil")

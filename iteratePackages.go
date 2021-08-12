@@ -11,6 +11,11 @@ type packagesIterator = func(pkg *packages.Package, parentLog LogCLI) error
 // Note that if the focus is set to packagePath, it will iterated only over
 // the specified package
 func (p *GoParser) iteratePackages(callback packagesIterator) error {
+	if len(p.pkgs) == 0 {
+		p.log.Debug("There are no packages to iterate...")
+		return nil
+	}
+
 	for _, currPkg := range p.pkgs {
 		log := p.log.Debug("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
 

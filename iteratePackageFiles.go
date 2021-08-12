@@ -13,6 +13,11 @@ type packageFilesIterator = func(currFile *ast.File, filePkg *packages.Package, 
 // file
 func (p *GoParser) iteratePackageFiles(callback packageFilesIterator) error {
 	packagesIterator := func(pkg *packages.Package, parentLog LogCLI) error {
+		if len(pkg.Syntax) == 0 {
+			parentLog.Debug("Skipped (zero Syntax objects)...")
+			return nil
+		}
+
 		for _, currFile := range pkg.Syntax {
 			currFilePath := p.fileSet.File(currFile.Pos()).Name()
 			log := parentLog.Debug("Analysing *ast.File '%s'...", currFilePath)
