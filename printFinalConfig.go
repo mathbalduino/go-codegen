@@ -6,7 +6,7 @@ import (
 
 // printFinalConfig will print, as a Debug log, the final configuration of the parser
 func printFinalConfig(pattern string, config Config, log LogCLI) {
-	focus := "Focus not defined (will not skip anything)"
+	focus := nilFocusStr
 	if config.Focus != nil {
 		packagePath, filePath, typeName, varName, functionName := "nil", "nil", "nil", "nil", "nil"
 		if config.Focus.packagePath != nil {
@@ -28,12 +28,12 @@ func printFinalConfig(pattern string, config Config, log LogCLI) {
 		focus = fmt.Sprintf(focusTemplate, packagePath, filePath, typeName, varName, functionName)
 	}
 
-	fset := "Using the FileSet of the library"
+	fset := nilFsetStr
 	if config.Fset != nil {
-		fset = "Using the FileSet provided by the client"
+		fset = notNilFsetStr
 	}
 
-	dir := "./"
+	dir := emptyDirStr
 	if config.Dir != "" {
 		dir = config.Dir
 	}
@@ -48,6 +48,11 @@ func printFinalConfig(pattern string, config Config, log LogCLI) {
 		fset,
 	)
 }
+
+const emptyDirStr = "./"
+const nilFsetStr = "Using the FileSet of the library"
+const notNilFsetStr = "Using the FileSet provided by the client"
+const nilFocusStr = "Focus not defined (will not skip anything)"
 
 const finalConfigTemplate = `New GoParser created. Final configuration:
 Pattern: %s
