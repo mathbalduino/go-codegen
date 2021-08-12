@@ -10,10 +10,56 @@ import (
 )
 
 func TestIterateFileTypeNames(t *testing.T) {
+	fakeScopeObjects := func(typeNameFocus *string) (map[string]*ast.Object, *types.Info) {
+		focusedOne := "TypeName_1"
+		if typeNameFocus != nil {
+			focusedOne = *typeNameFocus
+		}
+		typeNameIdents := []*ast.Ident{{Name: "TypeName_0"}, {Name: focusedOne}, {Name: "TypeName_2"}, {}}
+		typesInfo := &types.Info{
+			Defs: map[*ast.Ident]types.Object{
+				typeNameIdents[0]: types.NewTypeName(0, nil, typeNameIdents[0].Name, nil),
+				typeNameIdents[1]: types.NewTypeName(0, nil, typeNameIdents[1].Name, nil),
+				typeNameIdents[2]: types.NewTypeName(0, nil, typeNameIdents[2].Name, nil),
+				typeNameIdents[3]: types.NewVar(0, nil, "anyOtherThing", nil),
+			},
+		}
+		return map[string]*ast.Object{
+			"0":   {Decl: &ast.TypeSpec{Name: typeNameIdents[0]}},
+			"-":   {Decl: "anyOtherThing"},
+			"1":   {Decl: &ast.TypeSpec{Name: typeNameIdents[1]}},
+			"--":  {Decl: &ast.TypeSpec{Name: &ast.Ident{ /* not in typesInfo */ }}},
+			"---": {Decl: &ast.TypeSpec{Name: typeNameIdents[3]}},
+			"2":   {Decl: &ast.TypeSpec{Name: typeNameIdents[2]}},
+		}, typesInfo
+	}
+	fakeTypeNames := func(typeNameFocus *string) *GoParser {
+		fileSet := token.NewFileSet()
+		fileSet.AddFile("a", 1, 5)
+
+		objects, typesInfo := fakeScopeObjects(typeNameFocus)
+		focus := (*ParserFocus)(nil)
+		if typeNameFocus != nil {
+			focus = FocusTypeName(*typeNameFocus)
+		}
+		return &GoParser{
+			pkgs: []*packages.Package{{
+				Syntax: []*ast.File{{
+					Package: 2,
+					Scope:   &ast.Scope{Objects: objects},
+				}},
+				TypesInfo: typesInfo,
+			}},
+			log:     emptyMockLogCLI(),
+			fileSet: fileSet,
+			focus:   focus,
+		}
+	}
+
 	t.Run("Should return nil errors when there are no Scope.Objects to iterate", func(t *testing.T) {
 		p := fakeTypeNames(nil)
 		p.pkgs[0].Syntax[0].Scope.Objects = map[string]*ast.Object{}
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error {return nil})
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error { return nil })
 		if e != nil {
 			t.Fatalf("Expected to be nil")
 		}
@@ -87,53 +133,4 @@ func TestIterateFileTypeNames(t *testing.T) {
 			t.Fatalf("Callback was expected to be called one time for every TypeName")
 		}
 	})
-}
-
-func fakeScopeObjects(typeNameFocus *string) (map[string]*ast.Object, *types.Info) {
-	focusedOne := "TypeName_1"
-	if typeNameFocus != nil {
-		focusedOne = *typeNameFocus
-	}
-	typeNameIdents := []*ast.Ident{{Name: "TypeName_0"}, {Name: focusedOne}, {Name: "TypeName_2"}, {}}
-	typesInfo := &types.Info{
-		Defs: map[*ast.Ident]types.Object{
-			typeNameIdents[0]: types.NewTypeName(0, nil, typeNameIdents[0].Name, nil),
-			typeNameIdents[1]: types.NewTypeName(0, nil, typeNameIdents[1].Name, nil),
-			typeNameIdents[2]: types.NewTypeName(0, nil, typeNameIdents[2].Name, nil),
-			typeNameIdents[3]: types.NewVar(0, nil, "anyOtherThing", nil),
-		},
-	}
-	return map[string]*ast.Object{
-		"0": {Decl: &ast.TypeSpec{Name: typeNameIdents[0]}},
-		"-": {Decl: "anyOtherThing"},
-		"1": {Decl: &ast.TypeSpec{Name: typeNameIdents[1]}},
-		"--": {Decl: &ast.TypeSpec{Name: &ast.Ident{/* not in typesInfo */}}},
-		"---": {Decl: &ast.TypeSpec{Name: typeNameIdents[3]}},
-		"2": {Decl: &ast.TypeSpec{Name: typeNameIdents[2]}},
-	}, typesInfo
-}
-
-func fakeTypeNames(typeNameFocus *string) *GoParser {
-	fileSet := token.NewFileSet()
-	fileSet.AddFile("a", 1, 5)
-	fileSet.AddFile("b", 10, 5)
-	fileSet.AddFile("c", 20, 5)
-
-	objects, typesInfo := fakeScopeObjects(typeNameFocus)
-	focus := (*ParserFocus)(nil)
-	if typeNameFocus != nil {
-		focus = FocusTypeName(*typeNameFocus)
-	}
-	return &GoParser{
-		pkgs: []*packages.Package{{
-			Syntax: []*ast.File{{
-				Package: 2,
-				Scope:   &ast.Scope{Objects: objects},
-			}},
-			TypesInfo: typesInfo,
-		}},
-		log:     emptyMockLogCLI(),
-		fileSet: fileSet,
-		focus:   focus,
-	}
 }
