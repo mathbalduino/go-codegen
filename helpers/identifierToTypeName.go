@@ -76,7 +76,7 @@ var identifierToTypeNameDictionary = map[rune]rune{
 	',': 'ꓹ',
 }
 
-func GetIdentifierSubstitute(a rune) (rune, bool) {
+func GetCharReplacement(a rune) (rune, bool) {
 	b, exists := identifierToTypeNameDictionary[a]
 	return b, exists
 }
