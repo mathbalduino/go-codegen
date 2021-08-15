@@ -7,11 +7,6 @@ import (
 	"strings"
 )
 
-type GoImports interface {
-	NeedImport(string) bool
-	AliasFromPath(string) string
-}
-
 func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, log goParser.LogCLI) string {
 	switch type_ := t.(type) {
 
@@ -61,7 +56,7 @@ func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, log goParser.LogC
 			typeIdentifier := ResolveTypeIdentifier(type_.At(i).Type(), pkgImports, log)
 
 			// Note that the name is ignored. If this Tuple doesn't belongs to a Signature
-			// (it is a multiple assignment), problems can arise
+			// (it is a multiple assignment), problems can arise (always expected to be part of a signature)
 			str += fmt.Sprintf("%s, ", typeIdentifier)
 		}
 		return strings.TrimSuffix(str, ", ")
@@ -84,12 +79,13 @@ func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, log goParser.LogC
 				lastParam := ResolveTypeIdentifier(
 					types.NewTuple(type_.Params().At(type_.Params().Len()-1)), pkgImports, log)
 
-				// Remember, the function can have just one param (firstParam = lastParam = variadicParam)
+				// Check if there's just the variadic param
 				params = withoutLastParam
 				if params != "" {
 					params += ", "
 				}
-				// Replace the two chars that represents the variadic param as an slice
+
+				// Replace the two chars that are representing the variadic type as an slice
 				params += "..." + lastParam[2:]
 			} else {
 				params = ResolveTypeIdentifier(type_.Params(), pkgImports, log)
@@ -129,7 +125,7 @@ func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, log goParser.LogC
 		return str + "}"
 
 	default:
-		log.Fatal("unexpected field type: %s", type_.String())
+		log.Fatal(unexpectedTypeMsg, type_.String())
 		return ""
 	}
 }

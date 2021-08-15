@@ -43,7 +43,8 @@ func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named), 
 		}
 	default:
 		log.Fatal(unexpectedTypeMsg, type_.String())
+		return
 	}
 }
 
-const unexpectedTypeMsg = "unexpected field type: %s"
+const unexpectedTypeMsg = "unexpected type: %s"
