@@ -2,6 +2,8 @@ package signature
 
 import (
 	"fmt"
+	"io"
+	"os"
 )
 
 // ToStdout will print the signature header to the stdout.
@@ -10,11 +12,14 @@ import (
 func ToStdout(libNameVersion string, supportsANSI bool) {
 	text := fmt.Sprintf(signatureTmpl, libNameVersion)
 	if supportsANSI {
-		text = terminalColorGreen + text + terminalColorReset
+		text = terminalColorBoldGreen + text + terminalColorReset
 	}
 
-	fmt.Println(text)
+	fmt.Fprint(output, text)
 }
 
-const terminalColorGreen = "\033[32;1m"
+// As a variable just to ease tests
+var output io.Writer = os.Stdout
+
+const terminalColorBoldGreen = "\033[32;1m"
 const terminalColorReset = "\033[0m"
