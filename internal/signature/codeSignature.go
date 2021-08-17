@@ -8,14 +8,3 @@ import "fmt"
 func CodeSignature(libNameVersion string) string {
 	return fmt.Sprintf(signatureTmpl, libNameVersion)
 }
-
-const signatureTmpl = `
-||
-|| %s
-|| by Matheus Leonel Balduino
-||
-|| GitLab:    @matheuss_balduino
-|| Instagram: @matheuss_balduino
-|| WebSite:   matheus-balduino.com.br
-||
-`
