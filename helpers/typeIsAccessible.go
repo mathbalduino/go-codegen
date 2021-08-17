@@ -5,32 +5,32 @@ import (
 	"go/types"
 )
 
-func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goParser.LogCLI) bool {
+func TypeIsAccessible(t types.Type, fromPackagePath string, log goParser.LogCLI) bool {
 	switch type_ := t.(type) {
 	case *types.Basic:
 		log.Debug("Accessible: Is a basic type (*types.Basic)")
 		return true
 
 	case *types.Pointer:
-		ptrLog := log.Debug("Pointer type (*types.Pointer). Checking it's type...")
-		return typeIdentifierIsAccessible(type_.Elem(), fromPackagePath, ptrLog)
+		ptrLog := log.Debug("Pointer type (*types.Pointer). Checking it's element type...")
+		return TypeIsAccessible(type_.Elem(), fromPackagePath, ptrLog)
 
 	case *types.Array:
 		arrLog := log.Debug("Array type (*types.Array). Checking it's element type...")
-		return typeIdentifierIsAccessible(type_.Elem(), fromPackagePath, arrLog)
+		return TypeIsAccessible(type_.Elem(), fromPackagePath, arrLog)
 
 	case *types.Slice:
 		sliceLog := log.Debug("Slice type (*types.Slice). Checking it's element type...")
-		return typeIdentifierIsAccessible(type_.Elem(), fromPackagePath, sliceLog)
+		return TypeIsAccessible(type_.Elem(), fromPackagePath, sliceLog)
 
 	case *types.Map:
 		mapLog := log.Debug("Map type (*types.Map). Checking it's element and key type...")
-		return typeIdentifierIsAccessible(type_.Elem(), fromPackagePath, mapLog) &&
-			typeIdentifierIsAccessible(type_.Key(), fromPackagePath, mapLog)
+		return TypeIsAccessible(type_.Elem(), fromPackagePath, mapLog) &&
+			TypeIsAccessible(type_.Key(), fromPackagePath, mapLog)
 
 	case *types.Chan:
 		chanLog := log.Debug("Channel type (*types.Chan). Checking it's element type...")
-		return typeIdentifierIsAccessible(type_.Elem(), fromPackagePath, chanLog)
+		return TypeIsAccessible(type_.Elem(), fromPackagePath, chanLog)
 
 	case *types.Struct:
 		structLog := log.Debug("Anonymous struct type (*types.Struct). Checking it's fields...")
@@ -59,7 +59,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 
 			fieldType := field.Type()
 			fieldTypeLog := fieldLog.Debug("Checking field type '%s'...", fieldType.String())
-			if !typeIdentifierIsAccessible(fieldType, fromPackagePath, fieldTypeLog) {
+			if !TypeIsAccessible(fieldType, fromPackagePath, fieldTypeLog) {
 				return false
 			}
 		}
@@ -68,7 +68,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 		return true
 
 	case *types.Tuple:
-		tupleLog := log.Debug("Tuple type (*types.Tuple, function parameters or type of multiple assignments). Checking it's members...")
+		tupleLog := log.Debug("Tuple type (*types.Tuple, function parameters or multiple assignments). Checking it's members...")
 		if type_.Len() == 0 {
 			tupleLog.Debug("Accessible: doesn't have any members")
 			return true
@@ -79,7 +79,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 			memberType := member.Type()
 			memberLog := tupleLog.Debug("Member '%s', type '%s'...", member.Name(), memberType.String())
 
-			if !typeIdentifierIsAccessible(memberType, fromPackagePath, memberLog) {
+			if !TypeIsAccessible(memberType, fromPackagePath, memberLog) {
 				return false
 			}
 		}
@@ -89,7 +89,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 
 	case *types.Signature:
 		signLog := log.Debug("Signature/Function type (*types.Signature). Checking it's parameters and return values...")
-		return typeIdentifierIsAccessible(type_.Params(), fromPackagePath, signLog) && typeIdentifierIsAccessible(type_.Results(), fromPackagePath, signLog)
+		return TypeIsAccessible(type_.Params(), fromPackagePath, signLog) && TypeIsAccessible(type_.Results(), fromPackagePath, signLog)
 
 	case *types.Named:
 		namedLog := log.Debug("Named type (*types.Named)")
@@ -113,6 +113,11 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 
 	case *types.Interface:
 		interfaceLog := log.Debug("Interface type (*types.Interface). Checking it's methods...")
+		if type_.NumMethods() == 0 {
+			interfaceLog.Debug("Accessible: doesn't have any methods")
+			return true
+		}
+
 		for i := 0; i < type_.NumMethods(); i++ {
 			method := type_.Method(i)
 			methodLog := interfaceLog.Debug("Method '%s'...", method.Name())
@@ -132,7 +137,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 
 			methodType := method.Type()
 			methodTypeLog := methodLog.Debug("Checking method type '%s'...", methodType.String())
-			if !typeIdentifierIsAccessible(methodType, fromPackagePath, methodTypeLog) {
+			if !TypeIsAccessible(methodType, fromPackagePath, methodTypeLog) {
 				return false
 			}
 		}
@@ -141,7 +146,7 @@ func typeIdentifierIsAccessible(t types.Type, fromPackagePath string, log goPars
 		return true
 
 	default:
-		log.Fatal("Unexpected field type: %s. Exiting", type_.String())
+		log.Fatal(unexpectedTypeMsg, type_.String())
 		return false
 	}
 }
