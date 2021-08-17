@@ -5,6 +5,8 @@ import (
 	"go/types"
 )
 
+// ObjectIsAccessible will recursively check an object to see if it is accessible from the given
+// package path (is it public? Private? Builtin?...)
 func ObjectIsAccessible(obj types.Object, fromPackagePath string, parentLog goParser.LogCLI) bool {
 	log := parentLog.Debug("Checking to see if '%s' is accessible from '%s'...", obj.Name(), fromPackagePath)
 	if obj.Pkg() == nil {
