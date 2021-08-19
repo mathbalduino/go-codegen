@@ -3,6 +3,7 @@ package goFile
 import (
 	"fmt"
 	"gitlab.com/matheuss-leonel/go-codegen/goFile/goImports"
+	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
 )
 
 // privateImports is just an alias that will
@@ -31,30 +32,30 @@ type GoFile struct {
 	privateImports
 }
 
-// NewGoFile will create a new GO file
+// New will create a new GO file
 //
 // Note that the 'filename' cannot contain the folderpath, and the
 // 'packageName'/'packagePath' refers to the package that the file
 // will belong to
-func NewGoFile(filename, packageName, packagePath string) *GoFile {
+func New(filename, packageName, packagePath string) *GoFile {
 	return &GoFile{
-		name:           fmt.Sprintf("%s%s.go", filename, loxe.GeneratedFileSuffix),
-		packageName:    packageName,
-		sourceCode:     "",
-		privateImports: goImports.New(packagePath),
+		fmt.Sprintf("%s%s.go", filename, signature.FileSuffix),
+		packageName,
+		"",
+		goImports.New(packagePath),
 	}
 }
 
-// NewGoTestFile will create a new GO test file
+// NewTestFile will create a new GO test file
 //
 // Note that the 'filename' cannot contain the folderpath, and the
 // 'packageName'/'packagePath' refers to the package that the file
 // will belong to
-func NewGoTestFile(filename, packageName, packagePath string) *GoFile {
+func NewTestFile(filename, packageName, packagePath string) *GoFile {
 	return &GoFile{
-		name:           fmt.Sprintf("%s%s_test.go", filename, loxe.GeneratedFileSuffix),
-		packageName:    packageName,
-		sourceCode:     "",
-		privateImports: goImports.New(packagePath),
+		fmt.Sprintf("%s%s._test.go", filename, signature.FileSuffix),
+		packageName,
+		"",
+		goImports.New(packagePath),
 	}
 }

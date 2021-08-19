@@ -7,17 +7,16 @@ import (
 
 // Save will save the file to disk, ready to be compiled
 //
-// Note that you need to pass the name of the library that
-// generated it, in order to provide good debug information
-// inside the generated file
-func (f *GoFile) Save(libraryThatGeneratedIt, folder string) error {
+// The headerTitle param is used to fill the signature header, at the beginning of
+// the file
+func (f *GoFile) Save(headerTitle, folder string) error {
 	filename := fmt.Sprintf("%s/%s", folder, f.name)
-	sourceCode, e := f.SourceCode(libraryThatGeneratedIt, filename)
+	sourceCode, e := f.SourceCode(headerTitle, filename)
 	if e != nil {
 		return e
 	}
 
-	createdFile, e := os.Create(filename)
+	createdFile, e := osCreate(filename)
 	if e != nil {
 		return e
 	}
@@ -28,3 +27,5 @@ func (f *GoFile) Save(libraryThatGeneratedIt, folder string) error {
 	}
 	return createdFile.Close()
 }
+
+var osCreate = os.Create
