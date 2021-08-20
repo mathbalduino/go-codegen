@@ -21,6 +21,20 @@ func TestSourceCode(t *testing.T) {
 			t.Fatalf("Header missing/wrong")
 		}
 	})
+	t.Run("Should add imports", func(t *testing.T) {
+		imports := goImports.New("")
+		imports.AddImport("fmt", "fmt")
+		f := &GoFile{packageName: "somePkg", privateImports: imports}
+		f.AddCode("var abc = fmt.Sprintf(\"abc%s\", \"d\")")
+		filepath := "/"
+		code, e := f.SourceCode("", filepath)
+		if e != nil {
+			t.Fatalf("Error not expected")
+		}
+		if !strings.Contains(string(code), "import (\n\tfmt \"fmt\"\n)") {
+			t.Fatalf("Expected to add the imports")
+		}
+	})
 	t.Run("Should format the source code", func(t *testing.T) {
 		sourceCode := "  const   abc    =  `some string`"
 		f := &GoFile{packageName: "somePkg", privateImports: goImports.New(""), sourceCode: sourceCode}
@@ -35,7 +49,7 @@ func TestSourceCode(t *testing.T) {
 	})
 	t.Run("Should optimize imports", func(t *testing.T) {
 		imports := goImports.New("")
-		imports.AddImport("fmt", "fmt")
+		imports.AddImport("fmt", "fmt") // should be removed, since its not used
 		f := &GoFile{packageName: "somePkg", privateImports: imports}
 		filepath := "/"
 		code, e := f.SourceCode("", filepath)

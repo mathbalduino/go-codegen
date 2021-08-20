@@ -2,8 +2,8 @@ package tsFile
 
 import (
 	"fmt"
-	loxe "gitlab.com/loxe-tools/go-base-library/brand"
-	"gitlab.com/loxe-tools/go-base-library/codeGeneration/tsFile/tsImports"
+	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
+	"gitlab.com/matheuss-leonel/go-codegen/tsFile/tsImports"
 )
 
 // privateImports is just an alias that
@@ -28,15 +28,15 @@ type TsFile struct {
 	privateImports
 }
 
-// NewTsFile will create a new pointer to a TsFile
+// New will create a new pointer to a TsFile
 // with the given filename
 //
 // Note that the given filename cannot contain information
 // about the folderpath
-func NewTsFile(filename string) *TsFile {
+func New(filename string) *TsFile {
 	return &TsFile{
-		name:           fmt.Sprintf("%s%s.ts", filename, loxe.GeneratedFileSuffix),
-		sourceCode:     "",
-		privateImports: tsImports.NewTsImports(),
+		fmt.Sprintf("%s%s.ts", filename, signature.FileSuffix),
+		"",
+		tsImports.New(),
 	}
 }

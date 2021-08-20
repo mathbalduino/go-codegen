@@ -28,4 +28,5 @@ func (f *GoFile) Save(headerTitle, folder string) error {
 	return createdFile.Close()
 }
 
+// just to ease tests
 var osCreate = os.Create

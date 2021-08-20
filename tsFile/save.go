@@ -11,14 +11,13 @@ import (
 // Note that you need to pass the name of the library that
 // generated it, in order to provide good debug information
 // inside the generated file
-func (f *TsFile) Save(libraryThatGeneratedIt, folder string) error {
-	sourceCode, e := f.SourceCode(libraryThatGeneratedIt)
-	if e != nil {
-		return e
-	}
-
+//
+// The headerTitle param is used to fill the signature header, at the beginning of
+// the file
+func (f *TsFile) Save(headerTitle, folder string) error {
+	sourceCode := f.SourceCode(headerTitle)
 	filename := fmt.Sprintf("%s/%s", folder, f.name)
-	createdFile, e := os.Create(filename)
+	createdFile, e := osCreate(filename)
 	if e != nil {
 		return e
 	}
@@ -29,3 +28,6 @@ func (f *TsFile) Save(libraryThatGeneratedIt, folder string) error {
 	}
 	return createdFile.Close()
 }
+
+// just to ease tests
+var osCreate = os.Create
