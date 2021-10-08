@@ -1,4 +1,4 @@
-module github.com/mathbalduino/go-parser
+module github.com/mathbalduino/go-codegen
 
 go 1.17
 

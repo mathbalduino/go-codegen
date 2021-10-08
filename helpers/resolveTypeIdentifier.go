@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"fmt"
-	goParser "gitlab.com/matheuss-leonel/go-codegen"
+	goParser "github.com/mathbalduino/go-codegen"
 	"go/types"
 	"strings"
 )

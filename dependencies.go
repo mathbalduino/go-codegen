@@ -1,4 +1,4 @@
-package goParser
+package parser
 
 // LogCLI is used to log the parser actions, using only
 // two levels: Debug and Error

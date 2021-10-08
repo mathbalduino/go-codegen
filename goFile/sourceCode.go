@@ -2,7 +2,7 @@ package goFile
 
 import (
 	"fmt"
-	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
+	"github.com/mathbalduino/go-codegen/internal/signature"
 	"golang.org/x/tools/imports"
 )
 

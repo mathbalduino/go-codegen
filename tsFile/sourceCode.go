@@ -2,7 +2,7 @@ package tsFile
 
 import (
 	"fmt"
-	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
+	"github.com/mathbalduino/go-codegen/internal/signature"
 )
 
 // SourceCode will build the file source code, including the file imports

@@ -1,4 +1,4 @@
-package goParser
+package parser
 
 func emptyMockLogCLI() LogCLI {
 	m := &mockLogCLI{}

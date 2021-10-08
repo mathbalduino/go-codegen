@@ -2,8 +2,8 @@ package goFile
 
 import (
 	"fmt"
-	"gitlab.com/matheuss-leonel/go-codegen/goFile/goImports"
-	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
+	"github.com/mathbalduino/go-codegen/goFile/goImports"
+	"github.com/mathbalduino/go-codegen/internal/signature"
 	"strings"
 	"testing"
 )

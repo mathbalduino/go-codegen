@@ -14,11 +14,19 @@ func TestSourceCode(t *testing.T) {
 			"aliasA": "pkg/path/a",
 			"aliasB": "pkg/path/b",
 		}}
-		expected := "import (\n" +
+		expectedA := "import (\n" +
 			"aliasA \"pkg/path/a\"\n" +
 			"aliasB \"pkg/path/b\"\n" +
 			")\n"
-		if i.SourceCode() != expected {
+		expectedB := "import (\n" +
+			"aliasB \"pkg/path/b\"\n" +
+			"aliasA \"pkg/path/a\"\n" +
+			")\n"
+
+		// Maps don't preserve the order of the elements,
+		// that's why we test two possibilities
+		received := i.SourceCode()
+		if received != expectedA && received != expectedB {
 			t.Fatalf("Not the expected source code")
 		}
 	})

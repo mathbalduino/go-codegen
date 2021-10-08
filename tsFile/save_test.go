@@ -2,7 +2,7 @@ package tsFile
 
 import (
 	"fmt"
-	"gitlab.com/matheuss-leonel/go-codegen/tsFile/tsImports"
+	"github.com/mathbalduino/go-codegen/tsFile/tsImports"
 	"io/ioutil"
 	"os"
 	"testing"

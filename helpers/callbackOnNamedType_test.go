@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	goParser "gitlab.com/matheuss-leonel/go-codegen"
+	goParser "github.com/mathbalduino/go-codegen"
 	"go/types"
 	"testing"
 )

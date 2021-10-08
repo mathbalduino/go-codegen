@@ -2,7 +2,7 @@ package goFile
 
 import (
 	"fmt"
-	"gitlab.com/matheuss-leonel/go-codegen/goFile/goImports"
+	"github.com/mathbalduino/go-codegen/goFile/goImports"
 	"io/ioutil"
 	"os"
 	"testing"

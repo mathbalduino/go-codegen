@@ -7,12 +7,14 @@ const signatureTmpl = `
 || %s
 || by Matheus Leonel Balduino
 ||
-|| GitLab:    @matheuss_balduino
-|| Instagram: @matheuss_balduino
-|| WebSite:   matheus-balduino.com.br
+|| Everywhere, under @mathbalduino:
+||   GitLab:    @mathbalduino
+||   Instagram: @mathbalduino
+||   Twitter:   @mathbalduino
+||   WebSite:   mathbalduino.com.br
 ||
 `
 
 // FileSuffix should be used as a suffix for
 // every generated file
-const FileSuffix = ".matheuss_balduino"
+const FileSuffix = ".mathbalduino"

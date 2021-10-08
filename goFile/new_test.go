@@ -1,7 +1,7 @@
 package goFile
 
 import (
-	"gitlab.com/matheuss-leonel/go-codegen/internal/signature"
+	"github.com/mathbalduino/go-codegen/internal/signature"
 	"testing"
 )
 

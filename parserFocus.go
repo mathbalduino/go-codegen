@@ -1,4 +1,4 @@
-package goParser
+package parser
 
 import "fmt"
 
