@@ -1,6 +1,6 @@
-# go-parser
+# go-codegen
 
-Docs live at <a href="https://mathbalduino.com.br/go-parser" target="_blank">mathbalduino.com.br/go-parser</a>
+Docs live at <a href="https://mathbalduino.com.br/go-codegen" target="_blank">mathbalduino.com.br/go-codegen</a>
 
 ---
 
