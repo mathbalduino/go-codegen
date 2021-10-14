@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"fmt"
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/types"
 	"testing"
 )
@@ -119,25 +121,30 @@ func TestCallbackOnNamedType(t *testing.T) {
 			t.Fatalf("Callback was not expected to be called")
 		}
 	})
-	t.Run("Should call Log.Fatal when facing unrecognizable types", func(t *testing.T) {
-		fatalCalls := 0
-		mock := &mockLogCLI{mockFatal: func(msgFormat string, args ...interface{}) {
-			fatalCalls += 1
-			if msgFormat != unexpectedTypeMsg {
-				t.Fatalf("Wrong msg for unexpected types error")
-			}
-			if len(args) != 1 || args[0].(string) != "fake" {
-				t.Fatalf("Wrong variadic argument for unexpected types error")
-			}
-		}}
+	t.Run("Should call LoggerCLI.Fatal, panicking, when facing unrecognizable types", func(t *testing.T) {
 		calls := 0
 		callback := func(obj *types.Named) { calls += 1 }
-		CallbackOnNamedType(&fakeType{}, callback, mock)
+
+		fatalCalls := 0
+		ch := make(chan bool)
+		go func() {
+			defer func() {
+				e := recover()
+				if e != nil && e.(error).Error() == fmt.Sprintf(unexpectedTypeMsg, (&fakeType{}).String()) {
+					fatalCalls += 1
+				}
+				ch <- true
+			}()
+
+			CallbackOnNamedType(&fakeType{}, callback, loggerCLI.New(false, false, false))
+		}()
+
+		<-ch
 		if calls != 0 {
 			t.Fatalf("Callback was not expected to be called")
 		}
 		if fatalCalls != 1 {
-			t.Fatalf("Log.Fatal was expected to be called")
+			t.Fatalf("LoggerCLI.Fatal was expected to be called")
 		}
 	})
 }

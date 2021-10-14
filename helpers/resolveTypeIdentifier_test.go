@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/types"
 	"testing"
 )
@@ -262,18 +263,20 @@ func TestResolveTypeIdentifier(t *testing.T) {
 	})
 	t.Run("For unrecognized types, should call Log.Fatal", func(t *testing.T) {
 		calls := 0
-		m := &mockLogCLI{
-			mockFatal: func(msgFormat string, args ...interface{}) {
-				calls += 1
-				if msgFormat != unexpectedTypeMsg {
-					t.Fatalf("Wrong Log.Fatal msg")
+		ch := make(chan bool)
+		go func() {
+			defer func() {
+				e := recover()
+				if e != nil && e.(error).Error() == fmt.Sprintf(unexpectedTypeMsg, (&fakeType{}).String()) {
+					calls += 1
 				}
-				if len(args) != 1 || args[0].(string) != "fake" {
-					t.Fatalf("Expected to pass the type string to Log.Fatal as argument")
-				}
-			},
-		}
-		ResolveTypeIdentifier(&fakeType{}, nil, m)
+				ch <- true
+			}()
+
+			ResolveTypeIdentifier(&fakeType{}, nil, loggerCLI.New(false, false, false))
+		}()
+
+		<-ch
 		if calls != 1 {
 			t.Fatalf("Expected to call Log.Fatal one time")
 		}

@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 	t.Run("Should set filename to the given one", func(t *testing.T) {
 		filename := "name"
 		file := New(filename)
-		if file.name != filename + signature.FileSuffix + ".ts" {
+		if file.name != filename+signature.FileSuffix+".ts" {
 			t.Fatalf("Incorrect filename")
 		}
 	})

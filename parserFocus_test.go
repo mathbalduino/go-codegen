@@ -233,6 +233,6 @@ func TestParserFocus(t *testing.T) {
 
 			p.is("unrecognizable focus", "any value")
 		}()
-		<- c
+		<-c
 	})
 }

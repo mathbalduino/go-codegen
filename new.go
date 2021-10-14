@@ -17,7 +17,7 @@ type GoParser struct {
 	// focus tell the parser what kind of thing
 	// it must focus on. It can be a type, a file,
 	// an entire package, etc
-	focus   *ParserFocus
+	focus *ParserFocus
 
 	// logger is used to print information to stdout
 	// about each step
@@ -32,9 +32,9 @@ type GoParser struct {
 // NewGoParser creates a new parser for GO source files
 func NewGoParser(pattern string, config Config) (*GoParser, error) {
 	logger := loggerCLI.New(
-		config.LogFlags & LogJSON != 0,
-			config.LogFlags & LogDebug != 0,
-			config.LogFlags & LogTrace != 0,
+		config.LogFlags&LogJSON != 0,
+		config.LogFlags&LogDebug != 0,
+		config.LogFlags&LogTrace != 0,
 	)
 	printFinalConfig(pattern, config, logger)
 	packagesLoadConfig := packagesLoadConfig(config, logger)

@@ -13,7 +13,7 @@ func TestNew(t *testing.T) {
 	})
 	t.Run("Should set the filename correctly", func(t *testing.T) {
 		file := New("meuFile", "", "")
-		if file.name != "meuFile" + signature.FileSuffix + ".go" {
+		if file.name != "meuFile"+signature.FileSuffix+".go" {
 			t.Fatalf("Filename is wrong")
 		}
 	})
@@ -45,7 +45,7 @@ func TestNewTestFile(t *testing.T) {
 	})
 	t.Run("Should set the filename correctly", func(t *testing.T) {
 		file := NewTestFile("meuFile", "", "")
-		if file.name != "meuFile" + signature.FileSuffix + "._test.go" {
+		if file.name != "meuFile"+signature.FileSuffix+"._test.go" {
 			t.Fatalf("Filename is wrong")
 		}
 	})

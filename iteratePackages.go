@@ -23,7 +23,7 @@ func (p *GoParser) iteratePackages(callback packagesIterator) error {
 		log := p.logger.Debug("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
 
 		if len(currPkg.Errors) != 0 {
-			errorsLog := log.Error("Package '%s %s' contain errors. Skipping it...",  currPkg.Name, currPkg.PkgPath)
+			errorsLog := log.Error("Package '%s %s' contain errors. Skipping it...", currPkg.Name, currPkg.PkgPath)
 			for _, currError := range currPkg.Errors {
 				errorsLog.Error(currError.Error())
 			}

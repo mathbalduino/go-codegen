@@ -55,12 +55,12 @@ func TestMergeImports(t *testing.T) {
 			t.Fatalf("Expected a map containing the fixed clashes")
 		}
 		expected := map[string]string{
-			"alias1": "pkg/1",
-			"alias2": "pkg/2",
-			"alias4": "pkg/3",
-			"alias3": "pkg/4",
+			"alias1":   "pkg/1",
+			"alias2":   "pkg/2",
+			"alias4":   "pkg/3",
+			"alias3":   "pkg/4",
 			"alias4_2": "pkg/5",
-			"alias5": "pkg/6",
+			"alias5":   "pkg/6",
 		}
 		if !reflect.DeepEqual(i1.imports, expected) {
 			t.Fatalf("Receiver imports expected to be merged")

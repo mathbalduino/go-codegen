@@ -29,14 +29,14 @@ func TestIteratePackageFiles(t *testing.T) {
 		focusedFile := "focusedFile"
 		fileSet := token.NewFileSet()
 		fileSet.AddFile(focusedFile, int(focusedFilePos), focusedFileSize)
-		fileSet.AddFile("otherFiles", int(focusedFilePos) + focusedFileSize + 1, 10)
+		fileSet.AddFile("otherFiles", int(focusedFilePos)+focusedFileSize+1, 10)
 
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{Syntax: []*ast.File{
-					{Package: focusedFilePos + token.Pos(focusedFileSize + 1)},
+					{Package: focusedFilePos + token.Pos(focusedFileSize+1)},
 					{Package: focusedFilePos},
-					{Package: focusedFilePos + token.Pos(focusedFileSize + 1)},
+					{Package: focusedFilePos + token.Pos(focusedFileSize+1)},
 				}},
 			},
 			logger:  emptyMockLogCLI(),
