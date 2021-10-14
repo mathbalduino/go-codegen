@@ -14,9 +14,9 @@ func TestIteratePackageFiles(t *testing.T) {
 			pkgs: []*packages.Package{
 				{Syntax: []*ast.File{}},
 			},
-			log: emptyMockLogCLI(),
+			logger: emptyMockLogCLI(),
 		}
-		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
 			return nil
 		})
 		if e != nil {
@@ -39,12 +39,12 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: focusedFilePos + token.Pos(focusedFileSize + 1)},
 				}},
 			},
-			log: emptyMockLogCLI(),
+			logger:  emptyMockLogCLI(),
 			fileSet: fileSet,
-			focus: FocusFilePath(focusedFile),
+			focus:   FocusFilePath(focusedFile),
 		}
 		calls := 0
-		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
 			calls += 1
 			if fileSet.File(currFile.Pos()).Name() != focusedFile {
 				t.Fatalf("Callback was not expected to be called with non focused files")
@@ -70,11 +70,11 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: 2},
 				}},
 			},
-			log: emptyMockLogCLI(),
+			logger:  emptyMockLogCLI(),
 			fileSet: fileSet,
 		}
 		calls := 0
-		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
 			calls += 1
 			return fmt.Errorf("any error")
 		})
@@ -99,7 +99,7 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: 21},
 				}},
 			},
-			log: emptyMockLogCLI(),
+			logger:  emptyMockLogCLI(),
 			fileSet: fileSet,
 		}
 		callsA, callsB, callsC := 0, 0, 0

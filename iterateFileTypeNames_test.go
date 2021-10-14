@@ -50,7 +50,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 				}},
 				TypesInfo: typesInfo,
 			}},
-			log:     emptyMockLogCLI(),
+			logger:  emptyMockLogCLI(),
 			fileSet: fileSet,
 			focus:   focus,
 		}
@@ -59,14 +59,14 @@ func TestIterateFileTypeNames(t *testing.T) {
 	t.Run("Should return nil errors when there are no Scope.Objects to iterate", func(t *testing.T) {
 		p := fakeTypeNames(nil)
 		p.pkgs[0].Syntax[0].Scope.Objects = map[string]*ast.Object{}
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error { return nil })
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LoggerCLI) error { return nil })
 		if e != nil {
 			t.Fatalf("Expected to be nil")
 		}
 	})
 	t.Run("Should return errors returned by the callback", func(t *testing.T) {
 		p := fakeTypeNames(nil)
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			return fmt.Errorf("error")
 		})
 		if e == nil {
@@ -76,7 +76,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 	t.Run("Skip everything that is not a TypeName", func(t *testing.T) {
 		p := fakeTypeNames(nil)
 		calls := 0
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			calls += 1
 			return nil
 		})
@@ -91,7 +91,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 		focus := "focus"
 		p := fakeTypeNames(&focus)
 		calls := 0
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			if type_.Name() != focus {
 				t.Fatalf("Callback was not expected to be called with non focused TypeNames")
 				return nil
@@ -109,7 +109,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 	t.Run("Should call the callback for every TypeName that needs to be iterated", func(t *testing.T) {
 		p := fakeTypeNames(nil)
 		callsA, callsB, callsC := 0, 0, 0
-		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.iterateFileTypeNames(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			switch type_.Name() {
 			// Strings from "fakeScopeObjects"
 			case "TypeName_0":

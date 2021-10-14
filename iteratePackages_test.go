@@ -8,7 +8,7 @@ import (
 
 func TestIteratePackages(t *testing.T) {
 	t.Run("Should return nil when there are no packages", func(t *testing.T) {
-		p := &GoParser{pkgs: nil, log: emptyMockLogCLI()}
+		p := &GoParser{pkgs: nil, logger: emptyMockLogCLI()}
 		e := p.iteratePackages(nil)
 		if e != nil {
 			t.Fatalf("Expected to be nil")
@@ -24,10 +24,10 @@ func TestIteratePackages(t *testing.T) {
 				{PkgPath: okPkg, Errors: nil},
 				{PkgPath: "d", Errors: []packages.Error{{}}},
 			},
-			log: m,
+			logger: m,
 		}
 		calls := 0
-		e := p.iteratePackages(func(pkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackages(func(pkg *packages.Package, parentLog LoggerCLI) error {
 			calls += 1
 			if pkg.PkgPath != okPkg {
 				t.Fatalf("Packages with error should be skipped")
@@ -48,10 +48,10 @@ func TestIteratePackages(t *testing.T) {
 				{Errors: nil},
 				{Errors: nil},
 			},
-			log: m,
+			logger: m,
 		}
 		calls := 0
-		e := p.iteratePackages(func(pkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackages(func(pkg *packages.Package, parentLog LoggerCLI) error {
 			calls += 1
 			return fmt.Errorf("any")
 		})
@@ -71,11 +71,11 @@ func TestIteratePackages(t *testing.T) {
 				{PkgPath: focusPkg, Errors: nil},
 				{PkgPath: "b", Errors: nil},
 			},
-			log: m,
-			focus: FocusPackagePath(focusPkg),
+			logger: m,
+			focus:  FocusPackagePath(focusPkg),
 		}
 		calls := 0
-		e := p.iteratePackages(func(pkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackages(func(pkg *packages.Package, parentLog LoggerCLI) error {
 			calls += 1
 			if pkg.PkgPath != focusPkg {
 				t.Fatalf("Expected to iterate only over the focused package")
@@ -97,10 +97,10 @@ func TestIteratePackages(t *testing.T) {
 				{PkgPath: "b", Errors: nil},
 				{PkgPath: "c", Errors: nil},
 			},
-			log: m,
+			logger: m,
 		}
 		aCalls, bCalls, cCalls := 0, 0, 0
-		e := p.iteratePackages(func(pkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackages(func(pkg *packages.Package, parentLog LoggerCLI) error {
 			switch pkg.PkgPath {
 			case "a":
 				aCalls += 1

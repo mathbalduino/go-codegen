@@ -8,7 +8,7 @@ import (
 // CallbackOnNamedType will iterate over a types.Type, trying to find some NamedType to pass as argument
 // to the callback function. If the Type is an anonymous struct, for example, it will recursively iterate
 // over the fields until it finds some Named type, or a basic type (in which case, the callback is not called)
-func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named), log goParser.LogCLI) {
+func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named), log goParser.LoggerCLI) {
 	switch type_ := fieldType.(type) {
 	case *types.Basic:
 		return

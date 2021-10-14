@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/token"
 	"golang.org/x/tools/go/packages"
 )
@@ -18,15 +19,25 @@ type GoParser struct {
 	// an entire package, etc
 	focus   *ParserFocus
 
-	log     LogCLI
+	// logger is used to print information to stdout
+	// about each step
+	logger *loggerCLI.LoggerCLI
+
+	// fileSet will store information about the
+	// files paths. This information can be used
+	// by some methods
 	fileSet *token.FileSet
 }
 
 // NewGoParser creates a new parser for GO source files
-func NewGoParser(pattern string, config Config, log LogCLI) (*GoParser, error) {
-	printFinalConfig(pattern, config, log)
-
-	packagesLoadConfig := packagesLoadConfig(config, log)
+func NewGoParser(pattern string, config Config) (*GoParser, error) {
+	logger := loggerCLI.New(
+		config.LogFlags & LogJSON != 0,
+			config.LogFlags & LogDebug != 0,
+			config.LogFlags & LogTrace != 0,
+	)
+	printFinalConfig(pattern, config, logger)
+	packagesLoadConfig := packagesLoadConfig(config, logger)
 	pkgs, e := packages.Load(packagesLoadConfig, pattern)
 	if e != nil {
 		return nil, e
@@ -35,7 +46,7 @@ func NewGoParser(pattern string, config Config, log LogCLI) (*GoParser, error) {
 	return &GoParser{
 		pkgs,
 		config.Focus,
-		log,
+		logger,
 		packagesLoadConfig.Fset,
 	}, nil
 }

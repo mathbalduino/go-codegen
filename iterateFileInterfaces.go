@@ -4,12 +4,12 @@ import (
 	"go/types"
 )
 
-type FileInterfacesIterator = func(type_ *types.TypeName, parentLog LogCLI) error
+type FileInterfacesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
 
 // IterateFileInterfaces will iterate only over the interfaces that are defined
 // inside the parsed files
 func (p *GoParser) IterateFileInterfaces(callback FileInterfacesIterator) error {
-	fileTypeNamesIterator := func(type_ *types.TypeName, parentLog LogCLI) error {
+	fileTypeNamesIterator := func(type_ *types.TypeName, parentLog LoggerCLI) error {
 		log := parentLog.Debug("Analysing *types.TypeName '%s'...", type_.Name())
 		_, isInterface := type_.Type().Underlying().(*types.Interface)
 		if !isInterface {

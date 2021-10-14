@@ -37,7 +37,7 @@ func TestNewGoParser(t *testing.T) {
 		if p.focus != config.Focus {
 			t.Fatalf("GoParser.focus expected to be equal to config.Focus")
 		}
-		if p.log != LogCLI(mock) {
+		if p.logger != LogCLI(mock) {
 			t.Fatalf("GoParser.log expected to be equal to the mocked one")
 		}
 		if p.fileSet != config.Fset {

@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	goParser "github.com/mathbalduino/go-codegen"
 	"go/types"
 	"testing"
 )
@@ -147,39 +146,3 @@ type fakeType struct{}
 
 func (f *fakeType) Underlying() types.Type { return nil }
 func (f *fakeType) String() string         { return "fake" }
-
-// -----
-
-func emptyMockLogCLI() goParser.LogCLI {
-	m := &mockLogCLI{}
-	m.mockDebug = func(msgFormat string, args ...interface{}) goParser.LogCLI { return m }
-	m.mockError = func(msgFormat string, args ...interface{}) goParser.LogCLI { return m }
-	m.mockFatal = func(msgFormat string, args ...interface{}) {}
-	return m
-}
-
-type mockLogCLI struct {
-	mockDebug func(msgFormat string, args ...interface{}) goParser.LogCLI
-	mockError func(msgFormat string, args ...interface{}) goParser.LogCLI
-	mockFatal func(msgFormat string, args ...interface{})
-}
-
-func (m *mockLogCLI) Debug(msgFormat string, args ...interface{}) goParser.LogCLI {
-	if m.mockDebug == nil {
-		return nil
-	}
-	return m.mockDebug(msgFormat, args...)
-}
-
-func (m *mockLogCLI) Error(msgFormat string, args ...interface{}) goParser.LogCLI {
-	if m.mockError == nil {
-		return nil
-	}
-	return m.mockError(msgFormat, args...)
-}
-
-func (m *mockLogCLI) Fatal(msgFormat string, args ...interface{}) {
-	if m.mockFatal != nil {
-		m.mockFatal(msgFormat, args...)
-	}
-}

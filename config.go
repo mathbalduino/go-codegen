@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/token"
 	"golang.org/x/tools/go/packages"
 )
@@ -18,10 +19,15 @@ type Config struct {
 	BuildFlags []string
 	Focus      *ParserFocus
 	Fset       *token.FileSet
+
+	// LogFlags can be set using the constants
+	// LogTrace, LogDebug and LogJSON
+	// (use a bitwise-AND operator to use multiple)
+	LogFlags uint
 }
 
 // packagesLoadConfig is the configuration of the packages.Load function
-func packagesLoadConfig(config Config, log LogCLI) *packages.Config {
+func packagesLoadConfig(config Config, log *loggerCLI.LoggerCLI) *packages.Config {
 	if config.Fset == nil {
 		config.Fset = token.NewFileSet()
 	}
@@ -45,9 +51,14 @@ func packagesLoadConfig(config Config, log LogCLI) *packages.Config {
 	}
 }
 
-const packagesConfigMode =
-	packages.NeedImports |
+const packagesConfigMode = packages.NeedImports |
 	packages.NeedSyntax |
 	packages.NeedName |
 	packages.NeedTypes |
 	packages.NeedTypesInfo
+
+const (
+	LogTrace uint = 1 << iota
+	LogDebug
+	LogJSON
+)

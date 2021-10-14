@@ -5,14 +5,14 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type packageFilesIterator = func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error
+type packageFilesIterator = func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error
 
 // iteratePackageFiles will iterate over the files inside the parsed packages.
 //
 // Note that if the focus is set to filepath, it will iterate only over the specified
 // file
 func (p *GoParser) iteratePackageFiles(callback packageFilesIterator) error {
-	packagesIterator := func(pkg *packages.Package, parentLog LogCLI) error {
+	packagesIterator := func(pkg *packages.Package, parentLog LoggerCLI) error {
 		if len(pkg.Syntax) == 0 {
 			parentLog.Debug("Skipped (zero Syntax objects)...")
 			return nil

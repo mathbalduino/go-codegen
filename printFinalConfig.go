@@ -2,10 +2,11 @@ package parser
 
 import (
 	"fmt"
+	"github.com/mathbalduino/go-log/loggerCLI"
 )
 
 // printFinalConfig will print, as a Debug log, the final configuration of the parser
-func printFinalConfig(pattern string, config Config, log LogCLI) {
+func printFinalConfig(pattern string, config Config, log *loggerCLI.LoggerCLI) {
 	focus := nilFocusStr
 	if config.Focus != nil {
 		packagePath, filePath, typeName, varName, functionName := "nil", "nil", "nil", "nil", "nil"

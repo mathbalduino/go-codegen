@@ -1,10 +1,13 @@
 package parser
 
 import (
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"golang.org/x/tools/go/packages"
 )
 
-type packagesIterator = func(pkg *packages.Package, parentLog LogCLI) error
+type LoggerCLI = *loggerCLI.LoggerCLI
+
+type packagesIterator = func(pkg *packages.Package, parentLog LoggerCLI) error
 
 // iteratePackages will iterate over the parsed packages.
 //
@@ -12,12 +15,12 @@ type packagesIterator = func(pkg *packages.Package, parentLog LogCLI) error
 // the specified package
 func (p *GoParser) iteratePackages(callback packagesIterator) error {
 	if len(p.pkgs) == 0 {
-		p.log.Debug("There are no packages to iterate...")
+		p.logger.Debug("There are no packages to iterate...")
 		return nil
 	}
 
 	for _, currPkg := range p.pkgs {
-		log := p.log.Debug("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
+		log := p.logger.Debug("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
 
 		if len(currPkg.Errors) != 0 {
 			errorsLog := log.Error("Package '%s %s' contain errors. Skipping it...",  currPkg.Name, currPkg.PkgPath)

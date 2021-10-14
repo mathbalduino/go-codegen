@@ -42,7 +42,7 @@ func TestIterateFileStructs(t *testing.T) {
 				}},
 				TypesInfo: typesInfo,
 			}},
-			log:     emptyMockLogCLI(),
+			logger:  emptyMockLogCLI(),
 			fileSet: fileSet,
 		}
 	}
@@ -53,14 +53,14 @@ func TestIterateFileStructs(t *testing.T) {
 		delete(p.pkgs[0].Syntax[0].Scope.Objects, "2")
 		delete(p.pkgs[0].Syntax[0].Scope.Objects, "4")
 
-		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LogCLI) error { return nil })
+		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LoggerCLI) error { return nil })
 		if e != nil {
 			t.Fatalf("Expected to be nil")
 		}
 	})
 	t.Run("Should return errors returned by the callback", func(t *testing.T) {
 		p := fakeTypeNames()
-		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			return fmt.Errorf("error")
 		})
 		if e == nil {
@@ -70,7 +70,7 @@ func TestIterateFileStructs(t *testing.T) {
 	t.Run("Skip everything that is not a Struct", func(t *testing.T) {
 		p := fakeTypeNames()
 		calls := 0
-		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			calls += 1
 			return nil
 		})
@@ -84,7 +84,7 @@ func TestIterateFileStructs(t *testing.T) {
 	t.Run("Should call the callback for every Struct that needs to be iterated", func(t *testing.T) {
 		p := fakeTypeNames()
 		callsA, callsB, callsC := 0, 0, 0
-		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LogCLI) error {
+		e := p.IterateFileStructs(func(type_ *types.TypeName, parentLog LoggerCLI) error {
 			switch type_.Name() {
 			// Strings from "fakeScopeObjects"
 			case "TypeName_0":

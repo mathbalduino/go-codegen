@@ -20,7 +20,7 @@ func TestPrintFinalConfig(t *testing.T) {
 		log := &mockLogCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -69,7 +69,7 @@ func TestPrintFinalConfig(t *testing.T) {
 		log := &mockLogCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -118,7 +118,7 @@ func TestPrintFinalConfig(t *testing.T) {
 		log := &mockLogCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -168,7 +168,7 @@ func TestPrintFinalConfig(t *testing.T) {
 		log := &mockLogCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -218,7 +218,7 @@ func TestPrintFinalConfig(t *testing.T) {
 		log := &mockLogCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {

@@ -7,7 +7,7 @@ import (
 
 // TypeIsAccessible will check to see if some type is fully accessible from the given
 // package (is it public? Private? Builtin? All struct fields exported?...)
-func TypeIsAccessible(t types.Type, fromPackagePath string, log goParser.LogCLI) bool {
+func TypeIsAccessible(t types.Type, fromPackagePath string, log goParser.LoggerCLI) bool {
 	switch type_ := t.(type) {
 	case *types.Basic:
 		log.Debug("Accessible: Is a basic type (*types.Basic)")
