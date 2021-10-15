@@ -262,13 +262,13 @@ func TestResolveTypeIdentifier(t *testing.T) {
 		}
 	})
 	t.Run("For unrecognized types, should call Log.Fatal", func(t *testing.T) {
-		calls := 0
+		fatalCalls := 0
 		ch := make(chan bool)
 		go func() {
 			defer func() {
 				e := recover()
 				if e != nil && e.(error).Error() == fmt.Sprintf(unexpectedTypeMsg, (&fakeType{}).String()) {
-					calls += 1
+					fatalCalls += 1
 				}
 				ch <- true
 			}()
@@ -277,7 +277,7 @@ func TestResolveTypeIdentifier(t *testing.T) {
 		}()
 
 		<-ch
-		if calls != 1 {
+		if fatalCalls != 1 {
 			t.Fatalf("Expected to call Log.Fatal one time")
 		}
 	})

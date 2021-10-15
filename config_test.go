@@ -25,7 +25,7 @@ func TestConfig(t *testing.T) {
 		logMsg := "abc"
 		logArgs := []interface{}{"1", 2, 5.4}
 		debugCalls := 0
-		mock := &mockLogCLI{}
+		mock := &mockLoggerCLI{}
 		mock.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			debugCalls += 1
 			if msgFormat != logMsg {

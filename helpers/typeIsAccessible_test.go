@@ -401,25 +401,24 @@ func TestTypeIsAccessible(t *testing.T) {
 			t.Fatalf("Expected to be true")
 		}
 	})
-	t.Run("Not recognizable types should call Log.Fatal, and return false", func(t *testing.T) {
-		calls := 0
-		ok := false
+	t.Run("Not recognizable types should call Log.Fatal, panicking", func(t *testing.T) {
+		fatalCalls := 0
 		ch := make(chan bool)
 		go func() {
 			defer func() {
 				e := recover()
 				if e != nil && e.(error).Error() == fmt.Sprintf(unexpectedTypeMsg, (&fakeType{}).String()) {
-					calls += 1
+					fatalCalls += 1
 				}
 				ch <- true
 			}()
 
-			ok = TypeIsAccessible(&fakeType{}, "", loggerCLI.New(false, false, false))
+			TypeIsAccessible(&fakeType{}, "", loggerCLI.New(false, false, false))
 		}()
 
 		<-ch
-		if ok {
-			t.Fatalf("Expected to be false")
+		if fatalCalls != 1 {
+			t.Fatalf("Expected to call panic one time")
 		}
 	})
 }

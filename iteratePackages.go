@@ -5,7 +5,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type LoggerCLI = *loggerCLI.LoggerCLI
+type LoggerCLI = loggerCLI.LoggerCLI
 
 type packagesIterator = func(pkg *packages.Package, parentLog LoggerCLI) error
 

@@ -7,7 +7,7 @@ import (
 
 func TestNewGoParser(t *testing.T) {
 	t.Run("Should return errors of packages.Load", func(t *testing.T) {
-		p, e := NewGoParser("wrongpattern=", Config{}, &mockLogCLI{})
+		p, e := NewGoParser("wrongpattern=", Config{})
 		if e == nil {
 			t.Fatalf("The packages.Load error was expected to be returned")
 		}
@@ -16,7 +16,7 @@ func TestNewGoParser(t *testing.T) {
 		}
 	})
 	t.Run("Should return a valid GoParser and nil error", func(t *testing.T) {
-		p, e := NewGoParser("--inexistentPackage--", Config{}, &mockLogCLI{})
+		p, e := NewGoParser("--inexistentPackage--", Config{})
 		if e != nil {
 			t.Fatalf("The error was expected to be nil")
 		}
@@ -26,8 +26,7 @@ func TestNewGoParser(t *testing.T) {
 	})
 	t.Run("The returned GoParser pkgs, focus, log and fileSet should be filled", func(t *testing.T) {
 		config := Config{Focus: &ParserFocus{}, Fset: token.NewFileSet()}
-		mock := &mockLogCLI{}
-		p, _ := NewGoParser("--inexistentPackage--", config, mock)
+		p, _ := NewGoParser("--inexistentPackage--", config)
 		if p == nil {
 			t.Fatalf("GoParser expected to be not nil")
 		}
@@ -37,8 +36,8 @@ func TestNewGoParser(t *testing.T) {
 		if p.focus != config.Focus {
 			t.Fatalf("GoParser.focus expected to be equal to config.Focus")
 		}
-		if p.logger != LogCLI(mock) {
-			t.Fatalf("GoParser.log expected to be equal to the mocked one")
+		if p.logger == nil {
+			t.Fatalf("GoParser.log expected to not be nil")
 		}
 		if p.fileSet != config.Fset {
 			t.Fatalf("GoParser.fileSet expected to be equal to config.Fset")

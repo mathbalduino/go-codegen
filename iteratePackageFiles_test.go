@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/ast"
 	"go/token"
 	"golang.org/x/tools/go/packages"
@@ -14,7 +15,7 @@ func TestIteratePackageFiles(t *testing.T) {
 			pkgs: []*packages.Package{
 				{Syntax: []*ast.File{}},
 			},
-			logger: emptyMockLogCLI(),
+			logger: loggerCLI.New(false, false, false),
 		}
 		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
 			return nil
@@ -39,7 +40,7 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: focusedFilePos + token.Pos(focusedFileSize+1)},
 				}},
 			},
-			logger:  emptyMockLogCLI(),
+			logger:  loggerCLI.New(false, false, false),
 			fileSet: fileSet,
 			focus:   FocusFilePath(focusedFile),
 		}
@@ -70,7 +71,7 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: 2},
 				}},
 			},
-			logger:  emptyMockLogCLI(),
+			logger:  loggerCLI.New(false, false, false),
 			fileSet: fileSet,
 		}
 		calls := 0
@@ -99,11 +100,11 @@ func TestIteratePackageFiles(t *testing.T) {
 					{Package: 21},
 				}},
 			},
-			logger:  emptyMockLogCLI(),
+			logger:  loggerCLI.New(false, false, false),
 			fileSet: fileSet,
 		}
 		callsA, callsB, callsC := 0, 0, 0
-		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LogCLI) error {
+		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
 			switch fileSet.File(currFile.Pos()).Name() {
 			case "a":
 				callsA += 1

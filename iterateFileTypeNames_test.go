@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/ast"
 	"go/token"
 	"go/types"
@@ -50,7 +51,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 				}},
 				TypesInfo: typesInfo,
 			}},
-			logger:  emptyMockLogCLI(),
+			logger:  loggerCLI.New(false, false, false),
 			fileSet: fileSet,
 			focus:   focus,
 		}

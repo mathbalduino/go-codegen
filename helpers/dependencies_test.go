@@ -1,12 +1,5 @@
 package helpers
 
-func emptyMockGoImports() *mockGoImports {
-	return &mockGoImports{
-		func(path string) bool { return false },
-		func(path string) string { return "" },
-	}
-}
-
 type mockGoImports struct {
 	mockNeedImport    func(path string) bool
 	mockAliasFromPath func(path string) string

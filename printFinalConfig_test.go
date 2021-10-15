@@ -16,8 +16,9 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			nil,
 			nil,
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
 		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
@@ -65,8 +66,9 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			nil,
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
 		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
@@ -114,8 +116,9 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			nil,
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
 		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
@@ -164,8 +167,9 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			FocusPackagePath(focusStr),
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
 		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
@@ -214,8 +218,9 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			FocusFilePath(focusStr),
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
 		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
@@ -264,11 +269,12 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			FocusTypeName(focusStr),
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -314,11 +320,12 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			FocusVarName(focusStr),
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {
@@ -364,11 +371,12 @@ func TestPrintFinalConfig(t *testing.T) {
 			[]string{},
 			FocusFunctionName(focusStr),
 			token.NewFileSet(),
+			0,
 		}
-		log := &mockLogCLI{}
+		log := &mockLoggerCLI{}
 		calls := 0
 		pattern := "somePattern"
-		log.mockDebug = func(msgFormat string, args ...interface{}) LogCLI {
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
 			calls += 1
 
 			if msgFormat != finalConfigTemplate {

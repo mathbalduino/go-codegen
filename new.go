@@ -21,7 +21,7 @@ type GoParser struct {
 
 	// logger is used to print information to stdout
 	// about each step
-	logger *loggerCLI.LoggerCLI
+	logger LoggerCLI
 
 	// fileSet will store information about the
 	// files paths. This information can be used
