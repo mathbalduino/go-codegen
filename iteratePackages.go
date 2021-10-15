@@ -11,7 +11,7 @@ type packagesIterator = func(pkg *packages.Package, parentLog LoggerCLI) error
 
 // iteratePackages will iterate over the parsed packages.
 //
-// Note that if the focus is set to packagePath, it will iterated only over
+// Note that if the focus is set to packagePath, it will iterate only over
 // the specified package
 func (p *GoParser) iteratePackages(callback packagesIterator) error {
 	if len(p.pkgs) == 0 {

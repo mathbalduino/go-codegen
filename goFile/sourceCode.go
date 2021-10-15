@@ -30,6 +30,7 @@ func (f *GoFile) SourceCode(headerTitle, filepath string) ([]byte, error) {
 }
 
 const sourceCodeTmpl = `/*%s*/
+
 package %s
 
 %s

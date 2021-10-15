@@ -55,7 +55,7 @@ func New(filename, packageName, packagePath string) *GoFile {
 // will belong to
 func NewTestFile(filename, packageName, packagePath string) *GoFile {
 	return &GoFile{
-		fmt.Sprintf("%s%s._test.go", filename, signature.FileSuffix),
+		fmt.Sprintf("%s%s_test.go", filename, signature.FileSuffix),
 		packageName,
 		"",
 		goImports.New(packagePath),

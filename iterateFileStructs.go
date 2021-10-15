@@ -7,7 +7,7 @@ import (
 type FileStructsIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
 
 // IterateFileStructs will iterate only over the structs that are defined inside
-// the parsed files
+// the parsed go code
 func (p *GoParser) IterateFileStructs(callback FileStructsIterator) error {
 	fileTypeNamesIterator := func(type_ *types.TypeName, parentLog LoggerCLI) error {
 		log := parentLog.Debug("Analysing *types.TypeName '%s'...", type_.Name())

@@ -7,7 +7,7 @@ import (
 type FileInterfacesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
 
 // IterateFileInterfaces will iterate only over the interfaces that are defined
-// inside the parsed files
+// inside the parsed go code
 func (p *GoParser) IterateFileInterfaces(callback FileInterfacesIterator) error {
 	fileTypeNamesIterator := func(type_ *types.TypeName, parentLog LoggerCLI) error {
 		log := parentLog.Debug("Analysing *types.TypeName '%s'...", type_.Name())

@@ -30,7 +30,7 @@ func FocusFilePath(filePath string) *ParserFocus {
 }
 
 // FocusTypeName will tell the parser to look for a
-// specific GO type name
+// specific GO typename
 func FocusTypeName(typeName string) *ParserFocus {
 	return &ParserFocus{
 		nil,
@@ -74,24 +74,24 @@ type ParserFocus struct {
 	// path to focused package.
 	packagePath *string
 
-	// filePath is the file system path
-	// to the focused file
+	// filePath is the file system absolute
+	// path to the focused file
 	filePath *string
 
-	// typeName is the name of a GO
-	// type that is the focus
+	// typeName is the name of the
+	// focused GO typename
 	typeName *string
 
-	// varName is the name of a GO
-	// variable that is the focus
+	// varName is the name of the
+	// focused GO variable
 	varName *string
 
-	// functionName is the name of a GO
-	// function that is the focus
+	// functionName is the name of the
+	// focused GO function
 	functionName *string
 }
 
-// is is used to check if the focus is equal to the given one
+// is is used to check if the parser focus is equal to the given one
 func (f *ParserFocus) is(lvl focusLevel, value string) bool {
 	if f == nil {
 		// If it's nil, there's no focus

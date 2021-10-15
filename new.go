@@ -23,9 +23,8 @@ type GoParser struct {
 	// about each step
 	logger LoggerCLI
 
-	// fileSet will store information about the
-	// files paths. This information can be used
-	// by some methods
+	// fileSet is the one forwarded to the underlying
+	// packages.Load function
 	fileSet *token.FileSet
 }
 

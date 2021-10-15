@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 )
 
 // printFinalConfig will print, as a Debug log, the final configuration of the parser
@@ -38,6 +39,20 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		dir = config.Dir
 	}
 
+	logFlags := "-"
+	if config.LogFlags != 0 {
+		if config.LogFlags & LogJSON != 0 {
+			logFlags = "LogJSON | "
+		}
+		if config.LogFlags & LogTrace != 0 {
+			logFlags = "LogTrace | "
+		}
+		if config.LogFlags & LogDebug != 0 {
+			logFlags = "LogDebug"
+		}
+		logFlags = strings.TrimSuffix(logFlags, " | ")
+	}
+
 	log.Debug(finalConfigTemplate,
 		pattern,
 		config.Tests,
@@ -46,6 +61,7 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		config.BuildFlags,
 		focus,
 		fset,
+		logFlags,
 	)
 }
 
@@ -63,6 +79,7 @@ Config: {
 	BuildFlags: %v
 	Focus: %s
 	Fset: %s
+	LogFlags: %s
 }`
 
 const focusTemplate = `{

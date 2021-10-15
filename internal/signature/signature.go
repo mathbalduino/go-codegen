@@ -1,7 +1,7 @@
 package signature
 
 // signatureTmpl should be used to build headers
-// for generated files and prints to stdout
+// for generated files
 const signatureTmpl = `
 ||
 || %s
