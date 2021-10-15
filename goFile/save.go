@@ -7,8 +7,8 @@ import (
 
 // Save will save the file to disk, ready to be compiled
 //
-// The headerTitle param is used to fill the signature header, at the beginning of
-// the file
+// The headerTitle param is used to fill the signature header,
+// at the beginning of the file (usually, the library name)
 func (f *GoFile) Save(headerTitle, folder string) error {
 	filename := fmt.Sprintf("%s/%s", folder, f.name)
 	sourceCode, e := f.SourceCode(headerTitle, filename)

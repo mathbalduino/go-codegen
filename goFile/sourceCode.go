@@ -10,10 +10,10 @@ import (
 // keywords
 //
 // The filepath param is used to optimize the file imports. It must contain the
-// folderpath information with the filename
+// folderpath and filename information. Example: <folderpath>/<filename>
 //
-// The headerTitle param is used to fill the signature header, at the beginning of
-// the file
+// The headerTitle param is used to fill the signature header, at the beginning
+// of the file (usually, the library name)
 func (f *GoFile) SourceCode(headerTitle, filepath string) ([]byte, error) {
 	sourceCode := fmt.Sprintf(sourceCodeTmpl,
 		signature.NewSignature(headerTitle),

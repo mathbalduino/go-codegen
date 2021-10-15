@@ -11,15 +11,16 @@ import (
 // private field
 type privateImports = *goImports.GoImports
 
-// GoFile holds information about
-// a generate GO file
+// GoFile holds information
+// about a GO file
 type GoFile struct {
 	// name will be the name of the
-	// generated file (without folderpath)
+	// generated file, without folderpath
+	// (the extension will always be .go)
 	name string
 
 	// packageName is the name of the
-	// package that the file will belong
+	// package that the file belongs to
 	packageName string
 
 	// sourceCode is the file source code
@@ -32,10 +33,10 @@ type GoFile struct {
 	privateImports
 }
 
-// New will create a new GO file
+// New will create a new GO file representation
 //
-// Note that the 'filename' cannot contain the folderpath, and the
-// 'packageName'/'packagePath' refers to the package that the file
+// Note that the filename cannot contain the folderpath, and the
+// packageName/packagePath refers to the package that the file
 // will belong to
 func New(filename, packageName, packagePath string) *GoFile {
 	return &GoFile{
@@ -46,7 +47,8 @@ func New(filename, packageName, packagePath string) *GoFile {
 	}
 }
 
-// NewTestFile will create a new GO test file
+// NewTestFile will create a new GO test file, with the "_test" filename
+// suffix
 //
 // Note that the 'filename' cannot contain the folderpath, and the
 // 'packageName'/'packagePath' refers to the package that the file
