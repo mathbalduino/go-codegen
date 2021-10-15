@@ -14,10 +14,10 @@ type GoImports struct {
 	imports map[string]string
 }
 
-// New will create a new import list to a GO file.
+// New will create a new import list to a GO file/package
 //
 // Note that the packagePath param is the path to the host
-// package, and can be used to calculate the other imports
+// package, and will be used to calculate the other imports
 func New(packagePath string) *GoImports {
 	return &GoImports{
 		packagePath: packagePath,

@@ -5,7 +5,7 @@ import (
 )
 
 // SourceCode will transform the list of imports in
-// GO source code, ready to be compiled
+// valid GO source code, ready to be compiled
 func (i *GoImports) SourceCode() string {
 	if len(i.imports) == 0 {
 		return ""

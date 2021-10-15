@@ -1,16 +1,22 @@
 package goImports
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // AddImport will take some alias and package path and try to add it to the
-// list of imports.
+// list of imports
 //
 // The given alias is just a suggestion, it can be changed if there's a clash
-// with another import
+// with another import alias
 //
-// If the package path is already present in the import list, the already
-// existing alias will be returned
+// If the package path is already inside the import list, it's alias will be
+// returned
 func (i *GoImports) AddImport(suggestedAlias, packagePath string) string {
+	if strings.TrimSpace(suggestedAlias) == "" {
+		panic(fmt.Errorf(emptyAliasError))
+	}
 	if !i.NeedImport(packagePath) {
 		panic(fmt.Errorf(addUnnecessaryImportError, packagePath))
 	}
@@ -36,4 +42,5 @@ func (i *GoImports) AddImport(suggestedAlias, packagePath string) string {
 	return possibleAlias
 }
 
+const emptyAliasError = "you cannot add an import with an empty alias"
 const addUnnecessaryImportError = "trying to add unnecessary import: %s"

@@ -6,6 +6,32 @@ import (
 )
 
 func TestAddImport(t *testing.T) {
+	t.Run("Should panic if the given alias is empty", func(t *testing.T) {
+		i := &GoImports{"some/pkg/path", map[string]string{}}
+		panicked := false
+		panicMsg := ""
+		c := make(chan bool)
+		go func() {
+			defer func() {
+				e := recover()
+				if e != nil {
+					panicked = true
+					panicMsg = e.(error).Error()
+				}
+				c <- true
+			}()
+			i.AddImport("   \n ", "some/another/path")
+			c <- true
+		}()
+
+		<-c
+		if !panicked {
+			t.Fatalf("Expected to panic")
+		}
+		if panicMsg != emptyAliasError {
+			t.Fatalf("Wrong panic msg")
+		}
+	})
 	t.Run("Should panic if the given new import doesn't need to be imported", func(t *testing.T) {
 		pkgPath := "some/pkg/path"
 		i := &GoImports{pkgPath, map[string]string{}}
