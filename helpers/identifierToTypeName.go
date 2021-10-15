@@ -8,10 +8,10 @@ const sliceReplacement = "Slc_"
 const arrReplacement = "Arr_"
 const variadicReplacement = "Variadic_"
 
-// IdentifierToAsciiTypeName will transform a type identifier into a
-// ASCII-only GO type name
+// IdentifierToAsciiTypeName will transform a type identifier
+// into an ASCII-only, valid GO typename
 //
-// Example: "*int" turns into "Ptr_int"
+// Example: "*int" (invalid typename) turns into "Ptr_int"
 func IdentifierToAsciiTypeName(typeIdentifier string) string {
 	typename := ""
 	for i, char := range typeIdentifier {
@@ -51,7 +51,9 @@ func IdentifierToAsciiTypeName(typeIdentifier string) string {
 }
 
 // IdentifierToTypeName will transform a type identifier into
-// a valid GO type name. Note that it will use non-ASCII symbols
+// a valid GO typename. Note that it will use non-ASCII symbols
+// as a trick to stay as close as possible to the original
+// identifier representation
 //
 // Example: "*int" turns into "ᕽint"
 func IdentifierToTypeName(typeIdentifier string) string {
@@ -68,7 +70,7 @@ func IdentifierToTypeName(typeIdentifier string) string {
 }
 
 // identifierToTypeNameDictionary maps from invalid
-// GO type name symbols to valid alternatives
+// GO typename symbols to valid non-ASCII alternatives
 var identifierToTypeNameDictionary = map[rune]rune{
 	'(': 'ᑕ',
 	')': 'ᑐ',
@@ -86,8 +88,8 @@ var identifierToTypeNameDictionary = map[rune]rune{
 	',': 'ꓹ',
 }
 
-// GetCharReplacement will return the valid equivalent of an
-// invalid GO type name symbol
+// GetCharReplacement will return the valid non-ASCII
+// equivalent of an invalid GO typename symbol
 func GetCharReplacement(a rune) (rune, bool) {
 	b, exists := identifierToTypeNameDictionary[a]
 	return b, exists

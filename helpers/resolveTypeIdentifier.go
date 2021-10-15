@@ -9,7 +9,7 @@ import (
 
 // ResolveTypeIdentifier will take some type and return a string that represents it
 //
-// Example: an integer pointer type will return "*int"
+// Example: the type "pointer to integer" will return the string "*int"
 func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, log goParser.LoggerCLI) string {
 	switch type_ := t.(type) {
 
