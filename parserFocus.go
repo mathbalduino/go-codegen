@@ -7,11 +7,9 @@ import "fmt"
 //
 // Note that the packagePath argument refers to the import
 // path to the target package, not the package name
-func FocusPackagePath(packagePath string) *ParserFocus {
-	return &ParserFocus{
+func FocusPackagePath(packagePath string) *Focus {
+	return &Focus{
 		&packagePath,
-		nil,
-		nil,
 		nil,
 		nil,
 	}
@@ -19,57 +17,29 @@ func FocusPackagePath(packagePath string) *ParserFocus {
 
 // FocusFilePath will tell the parser to look for a
 // specific file, based on it's ABSOLUTE path
-func FocusFilePath(filePath string) *ParserFocus {
-	return &ParserFocus{
+func FocusFilePath(filePath string) *Focus {
+	return &Focus{
 		nil,
 		&filePath,
-		nil,
-		nil,
 		nil,
 	}
 }
 
 // FocusTypeName will tell the parser to look for a
 // specific GO typename
-func FocusTypeName(typeName string) *ParserFocus {
-	return &ParserFocus{
+func FocusTypeName(typeName string) *Focus {
+	return &Focus{
 		nil,
 		nil,
 		&typeName,
-		nil,
-		nil,
-	}
-}
-
-// FocusVarName will tell the parser to look for a
-// specific GO variable name
-func FocusVarName(varName string) *ParserFocus {
-	return &ParserFocus{
-		packagePath:  nil,
-		filePath:     nil,
-		typeName:     nil,
-		varName:      &varName,
-		functionName: nil,
-	}
-}
-
-// FocusFunctionName will tell the parser to look for a
-// specific GO function name
-func FocusFunctionName(functionName string) *ParserFocus {
-	return &ParserFocus{
-		packagePath:  nil,
-		filePath:     nil,
-		typeName:     nil,
-		varName:      nil,
-		functionName: &functionName,
 	}
 }
 
 // -----
 
-// ParserFocus tells to the parser
+// Focus tells to the parser
 // what it needs to focus on
-type ParserFocus struct {
+type Focus struct {
 	// packagePath is the import
 	// path to focused package.
 	packagePath *string
@@ -81,18 +51,10 @@ type ParserFocus struct {
 	// typeName is the name of the
 	// focused GO typename
 	typeName *string
-
-	// varName is the name of the
-	// focused GO variable
-	varName *string
-
-	// functionName is the name of the
-	// focused GO function
-	functionName *string
 }
 
 // is is used to check if the parser focus is equal to the given one
-func (f *ParserFocus) is(lvl focusLevel, value string) bool {
+func (f *Focus) is(lvl focusLevel, value string) bool {
 	if f == nil {
 		// If it's nil, there's no focus
 		return true
@@ -108,10 +70,6 @@ func (f *ParserFocus) is(lvl focusLevel, value string) bool {
 		return f.filePath == nil || *f.filePath == value
 	case focusTypeName:
 		return f.typeName == nil || *f.typeName == value
-	case focusVarName:
-		return f.varName == nil || *f.varName == value
-	case focusFunctionName:
-		return f.functionName == nil || *f.functionName == value
 	default:
 		panic(fmt.Errorf("unrecognizable focus: %s", lvl))
 	}
@@ -124,6 +82,4 @@ const (
 	focusPackagePath  focusLevel = "packagePath"
 	focusFilePath     focusLevel = "filePath"
 	focusTypeName     focusLevel = "typeName"
-	focusVarName      focusLevel = "varName"
-	focusFunctionName focusLevel = "functionName"
 )

@@ -9,7 +9,7 @@ import (
 func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 	focus := nilFocusStr
 	if config.Focus != nil {
-		packagePath, filePath, typeName, varName, functionName := "nil", "nil", "nil", "nil", "nil"
+		packagePath, filePath, typeName := "nil", "nil", "nil"
 		if config.Focus.packagePath != nil {
 			packagePath = *config.Focus.packagePath
 		}
@@ -19,14 +19,8 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		if config.Focus.typeName != nil {
 			typeName = *config.Focus.typeName
 		}
-		if config.Focus.varName != nil {
-			varName = *config.Focus.varName
-		}
-		if config.Focus.functionName != nil {
-			functionName = *config.Focus.functionName
-		}
 
-		focus = fmt.Sprintf(focusTemplate, packagePath, filePath, typeName, varName, functionName)
+		focus = fmt.Sprintf(focusTemplate, packagePath, filePath, typeName)
 	}
 
 	fset := nilFsetStr
@@ -86,6 +80,4 @@ const focusTemplate = `{
 		packagePath: %s
 		filePath: %s
 		typeName: %s
-		varName: %s
-		functionName: %s
 	}`

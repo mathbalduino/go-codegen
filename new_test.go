@@ -25,7 +25,7 @@ func TestNewGoParser(t *testing.T) {
 		}
 	})
 	t.Run("The returned GoParser pkgs, focus, log and fileSet should be filled", func(t *testing.T) {
-		config := Config{Focus: &ParserFocus{}, Fset: token.NewFileSet()}
+		config := Config{Focus: &Focus{}, Fset: token.NewFileSet()}
 		p, _ := NewGoParser("--inexistentPackage--", config)
 		if p == nil {
 			t.Fatalf("GoParser expected to be not nil")

@@ -39,7 +39,7 @@ func TestIterateFileTypeNames(t *testing.T) {
 		fileSet.AddFile("a", 1, 5)
 
 		objects, typesInfo := fakeScopeObjects(typeNameFocus)
-		focus := (*ParserFocus)(nil)
+		focus := (*Focus)(nil)
 		if typeNameFocus != nil {
 			focus = FocusTypeName(*typeNameFocus)
 		}

@@ -69,7 +69,7 @@ type Config struct {
 	// filenames, typenames, etc, will continue to be used.
 	// Only other pkgs will be ignored (the same for filenames,
 	// typenames, etc)
-	Focus *ParserFocus
+	Focus *Focus
 
 	// LogFlags controls the logging configuration of the parser.
 	// It can be set using the constants LogTrace, LogDebug and

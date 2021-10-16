@@ -17,7 +17,7 @@ type GoParser struct {
 	// focus tell the parser what kind of thing
 	// it must focus on. It can be a type, a file,
 	// an entire package, etc
-	focus *ParserFocus
+	focus *Focus
 
 	// logger is used to print information to stdout
 	// about each step
