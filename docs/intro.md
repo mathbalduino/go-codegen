@@ -22,7 +22,7 @@ go get github.com/mathbalduino/go-codegen
 ```
 
 As already said, this library acts as a wrapper around `golang.org/x/tools`, so you will need to create a new
-`GoParser` instance (that calls `golang.org/x/tools/go/packages.Load`) in order to use its utility methods:
+`GoParser` instance (that calls `golang.org/x/tools/go/packages.Load`) in order to use its utility methods. Example:
 
 ```go
 package main
@@ -69,7 +69,7 @@ interesting to export it (if you think it is, [let me know](https://github.com/m
 
 If you want to generate `go` or `typescript` code, the library comes with builtin support for this kind
 of files, abstracting the file import list, code formatting and persistence (you can use the same API for
-`ts` files):
+`ts` files). Example:
 
 ```go
 package main
@@ -105,7 +105,7 @@ func main() {
 ## Focus
 
 The `*GoParser`, by default, will iterate over the entire parsed code. You can control this behavior by giving
-a pointer to a `*ParserFocus` struct to the `Config`, at the `*GoParser` creation, that tells to the `*GoParser`
+a `*ParserFocus` to the `Config`, at the `*GoParser` creation, that tells to the `*GoParser`
 to iterate only over some `typeName`, `filePath`, etc (for details, see the subsection [Focus](./go-parser-api.md#focus)):
 
 ```go
@@ -114,17 +114,4 @@ func FocusTypeName(typeName string) *ParserFocus { ... }
 // ...
 ```
 
-For a complete list, go to the [Focus](404) section.
-
 In the next chapters, we'll discuss these sections with more detail...
-
-[ ] Falar sobre IterateInterfaces
-[ ] Falar sobre IterateStructs
-[ ] Falar sobre Config
-[ ] Mostrar como criar um novo parser (colocar referencia para o packages.Load)
-[ ] Falar sobre os Focus
-
-[ ] Falar sobre a abstração sobre GO files
-[ ] Abstração sobre TS files
-[ ] Falar sobre cada um dos helpers
-

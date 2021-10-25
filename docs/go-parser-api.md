@@ -13,6 +13,28 @@ was very hard to understand and use. After reading [this article](https://github
 multiple times, I came with this idea. I strongly recommend you to read the same article, to fully
 understand what we'll talk about (I'll assume that you've read).
 
+## Creating a *GoParser instance
+
+You can create a new `*GoParser` instance using the `NewGoParser` function, exported by the root package.
+It takes a `pattern` `string` and a `Config` `struct`.
+
+```go
+func NewGoParser(pattern string, config Config) (*GoParser, error) { ... }
+```
+
+The `pattern` `string` is forwarded directly to the `packages.Load` function. If you want to see details,
+go to the official [packages docs](https://pkg.go.dev/golang.org/x/tools/go/packages#pkg-overview).
+
+:::info
+When you create the `*GoParser` instance (calling the `NewGoParser` function), the `packages.Load` function is called 
+to parse the code. Depending on the size of the code to parse, this function call can be expensive.
+:::
+
+:::note
+Any errors that occur when calling `packages.Load` will be directly returned to the caller of `NewGoParser`,
+with a nil `*GoParser` reference.
+:::
+
 ## Configuration
 
 Before creating a new `*GoParser` instance, you will need to read about the `Config` struct, that 
@@ -31,7 +53,7 @@ type Config struct {
 ```
 
 The `Tests`, `Dir`, `Env`, `Fset` and `BuildFlags` are directly forwarded to the underlying `packages.Config`
-struct. If you need more info about it, see the [packages.Config docs](https://pkg.go.dev/golang.org/x/tools/go/packages#Config)
+struct. If you need to see more info about it, see the [packages.Config docs](https://pkg.go.dev/golang.org/x/tools/go/packages#Config)
 
 :::note
 You will notice that the `packages.Config` has many fields that aren't present inside the `go-codegen.Config`.
@@ -41,16 +63,236 @@ This is on purpose. If you need to use one of the excluded fields, please [let m
 The `LogFlags` field is used to control the amount of information that the library will write to the `stdout`,
 using the [LoggerCLI](https://mathbalduino.com.br/go-log/docs/advanced/logger_cli). The flags passed to 
 
-FALAR AQUI SOBRE AS FLAGS DO LOGGERCLI, JUNTO COM A QUESTAO DO JSON + BEAUTIFY
+TODO: FALAR AQUI SOBRE AS FLAGS DO LOGGERCLI, JUNTO COM A QUESTAO DO JSON + BEAUTIFY
 
 ### Focus
 
-Sometimes, you will want to parse the `go` code but iterate only over some specific section. For example, you can
-parse a package that contains many files, but just want to iterate over a specific file. To do it, you must give a
-`*ParserFocus` to the `Config`, at `*GoParser` creation time.
+Sometimes, you will want to parse the `go` code but iterate only over some specific thing. You can parse a 
+package that contains many files, but just want to iterate over a specific file, for example. To do it, you 
+must give a `*ParserFocus` to the `Config`, at `*GoParser` creation time.
 
-The `root` package exports many functions that you can use to create a new `*ParserFocus`:
+The `root` package exports three functions that you can use to create a new `*ParserFocus`:
 
 ```go
-
+func FocusPackagePath(packagePath string) *Focus { ... }
+func FocusFilePath(filePath string) *Focus { ... }
+func FocusTypeName(typeName string) *Focus { ... }
 ```
+
+:::note
+Currently, it's not possible to combine multiple focuses. If you want to filter packages and types, you will have
+to choose one of them. If you need this feature, [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
+:::
+
+Example: if you want to parse the `codeToParse.go` file, that contains 3 `structs`, but iterate only over the
+`StructB`, you can do something like this (consider `workdir` to be anything):
+
+```go title="<workdir>/codeToParse.go"
+package main
+
+type StructA struct {
+	FieldA string
+	FieldB string
+}
+
+type StructB struct {
+	FieldC string
+	FieldD string
+}
+
+type StructC struct {
+	FieldE string
+	FieldF string
+}
+```
+
+```go title="<workdir>/main.go"
+package main
+
+import "github.com/mathbalduino/go-codegen"
+
+func main() {
+	config := parser.Config{
+		Focus: parser.FocusTypeName("StructB"),
+	}
+	// ...
+}
+```
+
+With this `Config`, the parser will skip every type name that's different from `"StructB"`.
+
+## Iterate interfaces
+
+After the `*GoParser` instantiation (and code parsing), you can call the method below to iterate over `interfaces`:
+
+```go
+// just an alias
+type InterfacesIterator = func(interface_ *types.TypeName, logger LoggerCLI) error
+
+func (p *GoParser) IterateInterfaces(callback InterfacesIterator) error { ... }
+```
+
+With this method, you pass a callback function that will be executed once for every `interface` type inside the
+parsed code:
+
+```go title="<workdir>/codeToParse.go"
+package main
+
+type StructA struct {
+	FieldA string
+	FieldB string
+}
+
+type InterfaceA interface {
+	MethodA()
+	MethodB()
+}
+
+// private
+type interfaceB interface {
+	methodC()
+	methodD()
+}
+```
+
+```go title="<workdir>/main.go"
+package main
+
+import (
+	"fmt"
+	"github.com/mathbalduino/go-codegen"
+	"go/types"
+)
+
+func main() {
+	config := parser.Config{}
+	
+	// Assuming the code is being executed at <workdir>
+	p, e := parser.NewGoParser("./", config)
+	if e != nil {
+		panic(e)
+	}
+	
+	// stdout:
+	// 		InterfaceA
+	// 		interfaceB
+	e = p.IterateInterfaces(func(interface_ *types.TypeName, logger parser.LoggerCLI) error {
+		fmt.Println(interface_.Name())
+		return nil
+	})
+	if e != nil {
+		panic(e)
+	}
+}
+```
+
+:::note
+The example above will parse the `<workdir>/main.go` too, but it will be completely ignored, since there's no
+`interfaces` inside it
+:::
+
+:::note
+If you return some error from the callback function, this error will be returned to the caller of
+`IterateInterfaces`, stopping its execution.
+:::
+
+
+## Iterate structs
+
+After the `*GoParser` instantiation (and code parsing), you can call the method below to iterate over `structs`:
+
+```go
+// just an alias
+type StructsIterator = func(struct_ *types.TypeName, logger LoggerCLI) error
+
+func (p *GoParser) IterateStructs(callback StructsIterator) error { ... }
+```
+
+With this method, you pass a callback function that will be executed once for every `struct` type inside the
+parsed code:
+
+```go title="<workdir>/codeToParse.go"
+package main
+
+type StructA struct {
+	FieldA string
+	FieldB string
+}
+
+// private
+type structB interface {
+	fieldA string
+	fieldB string
+}
+
+type interfaceB interface {
+	methodC()
+	methodD()
+}
+```
+
+```go title="<workdir>/main.go"
+package main
+
+import (
+	"fmt"
+	"github.com/mathbalduino/go-codegen"
+	"go/types"
+)
+
+func main() {
+	config := parser.Config{}
+	
+	// Assuming the code is being executed at <workdir>
+	p, e := parser.NewGoParser("./", config)
+	if e != nil {
+		panic(e)
+	}
+	
+	// stdout:
+	// 		StructA
+	// 		structB
+	e = p.IterateStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error {
+		fmt.Println(struct_.Name())
+		return nil
+	})
+	if e != nil {
+		panic(e)
+	}
+}
+```
+
+:::note
+The example above will parse the `<workdir>/main.go` too, but it will be completely ignored, since there's no
+`structs` inside it
+:::
+
+:::note
+If you return some error from the callback function, this error will be returned to the caller of 
+`IterateStructs`, stopping its execution.
+:::
+
+## Other iterators
+
+The library comes with other iterators, but I keep them private to reduce the API size. Take a look:
+
+```go
+func (p *GoParser) iterateTypeNames(callback typeNamesIterator) error { ... }
+func (p *GoParser) iterateFiles(callback filesIterator) error { ... }
+func (p *GoParser) iteratePackages(callback packagesIterator) error { ... }
+```
+
+Internally, these methods are used to compose the exported ones.
+
+:::note
+If you think it's interesting to export any of these methods, [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
+:::
+
+## Some notes
+
+As you've seemed, this library doesn't abstract the most primitive types from `go/types`. When you call `IterateInterfaces`
+or `IterateStructs`, the `*types.TypeName` that the callback receives has all the necessary information about the 
+underlying type (name, fields, methods, etc).
+
+The library iterates over the parsed code using a `single-threaded` strategy. This can be improved in the future, but for
+now I didn't see the necessity. If you think it's important, [let me know](https://github.com/mathbalduino/go-codegen/issues/new).
