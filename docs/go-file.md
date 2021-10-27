@@ -14,7 +14,7 @@ using the exported functions from the `goFile.goImports` package.
 ## *GoImports
 
 This is the most important component of the `*GoFile` struct, so you need to understand it before going to the `*GoFile`
-API (that is, basically, just `get`/`set` methods).
+API (that is, basically, just `get`/`set` methods). You will find the `*GoImports` code under the [goImports package](https://github.com/mathbalduino/go-codegen/tree/main/goFile/goImports).
 
 The `*GoImports` struct represents a list of imports made by some package. This list can be the import list inside some 
 file (that belongs to a package, naturally), for example. The important thing is: `*GoImports` stores information about
@@ -138,13 +138,13 @@ import (
 
 func main() {
 	importList := goImports.New("example")
-	importList.Add("fmt", "fmt")
-	importList.Add("time", "time")
-	importList.Add("logger", "github.com/mathbalduino/go-log")
+	importList.AddImport("fmt", "fmt")
+	importList.AddImport("time", "time")
+	importList.AddImport("logger", "github.com/mathbalduino/go-log")
 
 	anotherList := goImports.New("anotherPkg")
-	anotherList.Add("sync", "sync")
-	anotherList.Add("fmt", "fmt")
+	anotherList.AddImport("sync", "sync")
+	anotherList.AddImport("fmt", "fmt")
 	// anotherList.Add("example", "example") // If enabled, causes panic
 
 	importList.MergeImports(anotherList)
@@ -163,7 +163,8 @@ func main() {
 ## *GoFile
 
 The `*GoFile` struct holds information about the `name`, the `packageName` (the name, not the path), the `sourceCode` (
-the body of the file) and the `importList` (as an embedded `*GoImports` struct).
+the body of the file) and the `importList` (as an embedded `*GoImports` struct). You will find the `*GoFile` code under
+the [goFile package](https://github.com/mathbalduino/go-codegen/tree/main/goFile).
 
 This struct will have all the methods from `*GoImports`, plus the ones describe below.
 
@@ -173,37 +174,103 @@ This struct will have all the methods from `*GoImports`, plus the ones describe 
 func New(filename, packageName, packagePath string) *GoFile { ... }
 ```
 
+This function will create a new `go` file instance. Note that the `filename` will receive some suffix (copyright and
+file extension), so you don't need to pass `"myfile.go"`, pass just `"myfile"` instead.
 
+The `packageName` and `packagePath` are the name and the import path of the package that the file will belong to, after
+persisted. If you're creating a file for the `go-codegen` library root package, the arguments will be:
+
+```go
+New("exampleFile", "parser", "github.com/mathbalduino/go-codegen")
+```
 
 ### AddCode
 
 ```go
-
+func (f *GoFile) AddCode(newSourceCode string) { ... }
 ```
+
+This method will just append the given string to the file body
+
+:::caution
+Don't use this method to add code related to the package information (`package <pkgName>` keyword), or code related to
+the file import list (use the `*GoImports` API to do this). These things will be handled automatically
+:::
 
 ### Name
 
 ```go
-
+func (f *GoFile) Name() string { ... }
 ```
+
+Just a getter to the name of the file. Note that the returned string will contain the copyright and the file extension.
 
 ### PackageName
 
 ```go
-
+func (f *GoFile) PackageName() string { ... }
 ```
+
+Just a getter to the package that file belongs to.
 
 ### Save
 
 ```go
-
+func (f *GoFile) Save(headerTitle, folder string) error { ... }
 ```
+
+This is one of the most important method of the `*GoFile` API. This method is the responsible for building the content of
+the file and persisting it to the `filesystem`.
+
+Note that this method will call the `SourceCode` method, in order to build the file content, and use the `os.Create`, 
+`os.Write` and `os.Close`.
+
+The `headerTitle` is just a string that will be put inside the file copyright comment section (right at the header). 
+Usually, I use something like `"<library>/<import>/<path> v1.0.0"`, but you can use anything.
 
 ### SourceCode
 
 ```go
-
+func (f *GoFile) SourceCode(headerTitle, filepath string) ([]byte, error) { ... }
 ```
 
+This method will build the content of the file, letting it ready to be compiled.
+
+The `headerTitle` arg is just a string that will be put inside the file copyright comment section (right at the header).
+Usually, I use something like `"<library>/<import>/<path> v1.0.0"`, but you can use anything.
+
+The `filepath` arg is the absolute `filesystem` path that the file will be persisted. It is used to process the import
+list of the file and format it (the underlying build tool needs this to get the context).
+
 ### Example
+
+```go
+package main
+
+import (
+	"github.com/mathbalduino/go-codegen/goFile"
+)
+
+func main() {
+	newFile := goFile.New("exampleFile", "parser", "github.com/mathbalduino/go-log")
+	newFile.AddImport("fmt", "fmt")
+	newFile.AddImport("time", "time")
+	
+	newFile.AddCode("func exampleFn() { fmt.Printf(\"Hello world: %s\\n\", exampleConstant) }")
+	newFile.AddCode("const exampleConstant = \"go-codegen\"")
+
+	newFile.Save("docs example", "/") // root folder
+	// File content:
+	//    package parser
+	//
+	//    import (
+	//       fmt "fmt"
+	//       time "time"
+	//    )
+	//
+	//    func exampleFn() { fmt.Printf("Hello world: %s\n", exampleConstant) }
+	//
+	//    const exampleConstant = "go-codegen"
+}
+```
 
