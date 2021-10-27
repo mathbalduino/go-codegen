@@ -8,14 +8,27 @@ sidebar_position: 1
 that you can use to parse and generate `go` code. It's part of my personal stack, and I use it
 to ease code generation inside another libraries.
 
+This library is something like a compilation of the functions, abstractions, etc. All the code
+that I usually need when generating code is present here. Feel free to contribute, if you want
+to.
+
+:::info
+I don't want to use this library to handle the _content_ of the generated files, just to provide
+tools that ease the process of code generation (code parsing, type inspection, file abstraction, etc).
+
+Don't expect to see code related to template generation, etc. This is intended to be implemented by 
+yourself when generating your code
+:::
+
 :::tip
 I strongly recommend that you read [this document about GO types](https://github.com/golang/example/blob/master/gotypes/go-types.md),
-to get a deeper understanding about what we'll talk about in the next chapters
+to get a deeper understanding about what we'll talk about in the next chapters. I'll assume will have read.
 :::
 
 ## Getting Started
 
-You will need to install go-codegen before starting. To do it, execute the following command (inside your `go module`):
+You will need to install go-codegen before starting. To do it, execute the following command (inside your `go module`
+folder):
 
 ```sh test
 go get github.com/mathbalduino/go-codegen

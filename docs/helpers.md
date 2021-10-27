@@ -48,9 +48,10 @@ This function will recursively iterate over the `type_` argument, building its `
 execution, you will have something like this: `map[string]uint`, `struct{someField string}`, etc.
 
 :::note
-Since the function takes a list of package imports, the `pkgImports` argument, it can calculate when it's necessary
-to include the name of the package from which some type comes from. The final type identifier can be both `*someType`
-or `*pkgName.someType`, depending on the given `pkgImports` argument
+Since the function takes a list of package imports (the `pkgImports` argument), it can calculate when it's necessary
+to include the name of the package from which some type comes from.
+
+The final type identifier can be both `*someType` or `*pkgName.someType`, depending on the given `pkgImports` argument
 :::
 
 
@@ -82,7 +83,7 @@ chars (I tried **_very_** hard to keep the generated type names readable).
 The type identifier `*int`, for example, will be converted to `ᕽint` (using the custom [Canadian Syllabics Hk](https://unicode-table.com/en/157D/)).
 
 :::caution
-If you need that your types contain only ASCII type names, don't use this function. Use the `IdentifierToAsciiTypeName`
+If you need that your types contain only ASCII type names, don't use this function, use the `IdentifierToAsciiTypeName`
 instead
 :::
 

@@ -22,8 +22,8 @@ It takes a `pattern` `string` and a `Config` `struct`.
 func NewGoParser(pattern string, config Config) (*GoParser, error) { ... }
 ```
 
-The `pattern` `string` is forwarded directly to the `packages.Load` function. If you want to see details,
-go to the official [packages docs](https://pkg.go.dev/golang.org/x/tools/go/packages#pkg-overview).
+The `pattern` `string` is forwarded directly to the `packages.Load` function. If you want to see details
+about what is this string, go to the official [packages docs](https://pkg.go.dev/golang.org/x/tools/go/packages#pkg-overview).
 
 :::info
 When you create the `*GoParser` instance (calling the `NewGoParser` function), the `packages.Load` function is called 
@@ -81,7 +81,7 @@ func FocusTypeName(typeName string) *Focus { ... }
 
 :::note
 Currently, it's not possible to combine multiple focuses. If you want to filter packages and types, you will have
-to choose one of them. If you need this feature, [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
+to choose one of them. If you need multiple focuses, please [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
 :::
 
 Example: if you want to parse the `codeToParse.go` file, that contains 3 `structs`, but iterate only over the
@@ -295,4 +295,4 @@ or `IterateStructs`, the `*types.TypeName` that the callback receives has all th
 underlying type (name, fields, methods, etc).
 
 The library iterates over the parsed code using a `single-threaded` strategy. This can be improved in the future, but for
-now I didn't see the necessity. If you think it's important, [let me know](https://github.com/mathbalduino/go-codegen/issues/new).
+now I don't see the necessity. If you think I'm wrong, please [let me know](https://github.com/mathbalduino/go-codegen/issues/new).
