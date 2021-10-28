@@ -40,8 +40,7 @@ This function takes the package path of the package that owns the import list (r
 If you're using `go modules`, the string can be something like `<repository_url>/<path>/<to>/<pkg>`. 
 
 Example: if we're generating code that will belong to the `go-codegen` library, the `packagePath` argument will be 
-equal to `"github.com/mathbalduino/go-codegen"` (for the root package), or something like 
-`"github.com/mathbalduino/go-codegen/<pkg_name>"` (for another package inside the lib).
+equal to `"github.com/mathbalduino/go-codegen"` (for the root package).
 
 ### AddImport
 
@@ -57,7 +56,8 @@ The returned string will be the final alias used to identify the given import. I
 alias will be returned.
 
 :::note
-The aliases will always be used when generating code, even if they're not required (`import fmt "fmt"`, for example)
+The aliases will always be used when the final code is generated, even if they're not required (`import fmt "fmt"` instead
+of `import "fmt"`, for example)
 :::
 
 ### AliasFromPath
@@ -68,6 +68,11 @@ func (i *GoImports) AliasFromPath(packagePath string) string { ... }
 
 If you want to query the alias used to represent some imported package, you can give its package path to this method. If
 the returned `string` is empty, there's no import with the given package path inside the import list.
+
+:::note
+This method is very useful when generating code. I frequently need to know the correct alias of some import, and 
+querying the import list is the best option
+:::
 
 ### MergeImports
 
@@ -82,12 +87,12 @@ The returned map represents the aliases that changed when being added, in case o
 `originalAlias -> newAlias`. The returned map can be empty if there's no clashes.
 
 :::caution
-If you have two import lists that belong to two different package paths, you can get a `panic` call. Example:
+If you have two import lists that belong to two different package paths, this method may `panic`. Example:
 
-- Say that you have two import lists: package A and package B
-- The package B imports the package A
-- You merge the import list of the package B into the import list of the package A
-- Since the package A cannot import itself, panic will be called 
+- Say that you have two import lists: one that belongs to package `A` and another one to package `B`
+- The package `B` imports the package `A`
+- You merge the import list of the package `B` into the import list of the package `A`
+- Since the package `A` cannot import itself, the method will `panic`
 
 More details [here](https://github.com/mathbalduino/go-codegen/blob/20cc90dac2de869cd647272abfabf5333e692553/goFile/goImports/addImport.go#L20)
 :::
@@ -99,8 +104,12 @@ func (i *GoImports) NeedImport(otherPackagePath string) bool { ... }
 ```
 
 Sometimes, you will need to test if some package needs to be imported in order to be accessible from the package that owns
-the import list. This method will just compare the strings (the one given to the `New` function and the one given to the
-method itself).
+the import list. 
+
+:::caution
+This method will just compare the strings (the one given to the `New` function and the one given to the
+method itself), so **_pay attention_**
+:::
 
 ### PackagePath
 
@@ -149,7 +158,7 @@ func main() {
 
 	importList.MergeImports(anotherList)
 	fmt.Println(importList.SourceCode())
-	// stdout (order not guaranteed):
+	// stdout (import order not guaranteed):
 	//
 	// import (
 	//    fmt "fmt"
@@ -162,7 +171,7 @@ func main() {
 
 ## *GoFile
 
-The `*GoFile` struct holds information about the `name`, the `packageName` (the name, not the path), the `sourceCode` (
+The `*GoFile` struct holds information about the file: `name`, the `packageName` (the name, not the path), the `sourceCode` (
 the body of the file) and the `importList` (as an embedded `*GoImports` struct). You will find the `*GoFile` code under
 the [goFile package](https://github.com/mathbalduino/go-codegen/tree/main/goFile).
 
@@ -175,13 +184,14 @@ func New(filename, packageName, packagePath string) *GoFile { ... }
 ```
 
 This function will create a new `go` file instance. Note that the `filename` will receive some suffix (copyright and
-file extension), so you don't need to pass `"myfile.go"`, pass just `"myfile"` instead.
+file extension), so you don't need to pass `"myfile.go"`, just use `"myfile"` instead.
 
 The `packageName` and `packagePath` are the name and the import path of the package that the file will belong to, after
 persisted. If you're creating a file for the `go-codegen` library root package, the arguments will be:
 
 ```go
-New("exampleFile", "parser", "github.com/mathbalduino/go-codegen")
+// New(filename, packageName, packagePath)
+New("exampleFileName", "parser", "github.com/mathbalduino/go-codegen")
 ```
 
 ### AddCode
@@ -211,7 +221,7 @@ Just a getter to the name of the file. Note that the returned string will contai
 func (f *GoFile) PackageName() string { ... }
 ```
 
-Just a getter to the package that file belongs to.
+Just a getter to the package name that file belongs to.
 
 ### Save
 
@@ -219,14 +229,15 @@ Just a getter to the package that file belongs to.
 func (f *GoFile) Save(headerTitle, folder string) error { ... }
 ```
 
-This is one of the most important method of the `*GoFile` API. This method is the responsible for building the content of
+This is one of the most important methods of the `*GoFile` API. This method is the responsible for building the content of
 the file and persisting it to the `filesystem`.
 
 Note that this method will call the `SourceCode` method, in order to build the file content, and use the `os.Create`, 
-`os.Write` and `os.Close`.
+`os.Write` and `os.Close` functions.
 
 The `headerTitle` is just a string that will be put inside the file copyright comment section (right at the header). 
-Usually, I use something like `"<library>/<import>/<path> v1.0.0"`, but you can use anything.
+Usually, I use the path and version of the library that generated the code (something like `"<library>/<import>/<path> v1.0.0"`),
+but you can use anything.
 
 ### SourceCode
 
@@ -239,8 +250,14 @@ This method will build the content of the file, letting it ready to be compiled.
 The `headerTitle` arg is just a string that will be put inside the file copyright comment section (right at the header).
 Usually, I use something like `"<library>/<import>/<path> v1.0.0"`, but you can use anything.
 
-The `filepath` arg is the absolute `filesystem` path that the file will be persisted. It is used to process the import
-list of the file and format it (the underlying build tool needs this to get the context).
+The `filepath` arg is the absolute `filesystem` **_folder_** path that the file will be persisted. It is used to process
+the import list of the file, format it (the underlying build tool needs this to get the context) and, of course, persist 
+it.
+
+:::info
+In this step, the [imports.Process](https://pkg.go.dev/golang.org/x/tools/imports#Process) will be applied to the final
+file content, adjusting the imports (formatting and removing unused imports)
+:::
 
 ### Example
 
@@ -254,18 +271,32 @@ import (
 func main() {
 	newFile := goFile.New("exampleFile", "parser", "github.com/mathbalduino/go-log")
 	newFile.AddImport("fmt", "fmt")
-	newFile.AddImport("time", "time")
+	newFile.AddImport("time", "time") // will be removed
 	
 	newFile.AddCode("func exampleFn() { fmt.Printf(\"Hello world: %s\\n\", exampleConstant) }")
 	newFile.AddCode("const exampleConstant = \"go-codegen\"")
 
-	newFile.Save("docs example", "/") // root folder
-	// File content:
+	newFile.Save("<some header title>", "/") // root folder
+	// File content: 
+	//    /*
+	//    || 
+	//    || <some header title> 
+	//    || 
+	//    || File generated using github.com/mathbalduino/go-codegen 
+	//    || by Matheus Leonel Balduino 
+	//    || 
+	//    || Everywhere, under @mathbalduino: 
+	//    ||   GitLab:    @mathbalduino 
+	//    ||   Instagram: @mathbalduino 
+	//    ||   Twitter:   @mathbalduino 
+	//    ||   WebSite:   mathbalduino.com.br 
+	//    || 
+	//    */
+	// 
 	//    package parser
 	//
 	//    import (
 	//       fmt "fmt"
-	//       time "time"
 	//    )
 	//
 	//    func exampleFn() { fmt.Printf("Hello world: %s\n", exampleConstant) }
@@ -274,3 +305,7 @@ func main() {
 }
 ```
 
+:::tip
+The comment section will not override the package documentation, since it's not attached to the `package` keyword. You can
+freely use a `doc.go` file in the same package folder to define its documentation
+:::
