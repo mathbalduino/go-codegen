@@ -8,9 +8,8 @@ sidebar_position: 1
 that you can use to parse and generate `go` code. It's part of my personal stack, and I use it
 to ease code generation inside another libraries.
 
-This library is something like a compilation of the functions, abstractions, etc. All the code
-that I usually need when generating code is present here. Feel free to contribute, if you want
-to.
+This library is something like a compilation of the functions, abstractions, etc, all the code
+that I usually need when generating code. Feel free to contribute, if you want to.
 
 :::info
 I don't want to use this library to handle the _content_ of the generated files, just to provide
@@ -27,7 +26,7 @@ to get a deeper understanding about what we'll talk about in the next chapters. 
 
 ## Getting Started
 
-You will need to install go-codegen before starting. To do it, execute the following command (inside your `go module`
+You will need to install `go-codegen` before starting. To do it, execute the following command (inside your `go module`
 folder):
 
 ```sh test
@@ -73,10 +72,8 @@ After you get a working instance of `*GoParser`, you can call methods that will 
 parsed code. With this information, you can generate new code. Currently, you can iterate over `structs`
 and `interfaces`. For more info, see the [*GoParser API](go-parser-api.md) section.
 
-:::note
-There's non-exported methods inside the library that iterate over other things, but I think it's not 
-interesting to export it (if you think it is, [let me know](https://github.com/mathbalduino/go-codegen/issues/new))
-:::
+Don't worry about the configuration, string pattern, etc. All these concepts will be explored in details in the
+next chapters.
 
 ## Files abstraction
 
@@ -127,4 +124,4 @@ func FocusTypeName(typeName string) *ParserFocus { ... }
 // ...
 ```
 
-In the next chapters, we'll discuss these sections with more detail...
+Keep reading the docs for details...

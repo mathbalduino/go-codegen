@@ -10,8 +10,12 @@ over the `go` parsed code, allowing you to gather information and generate new c
 
 This type is a wrapper around the `golang.org/x/tools/go/packages` API, that at the time I used
 was very hard to understand and use. After reading [this article](https://github.com/golang/example/blob/master/gotypes/go-types.md)
-multiple times, I came with this idea. I strongly recommend you to read the same article, to fully
-understand what we'll talk about (I'll assume that you've read).
+multiple times, I came with this idea.
+
+:::danger
+I strongly recommend you to read the above article, to fully understand what we'll talk about. I'll assume that you've
+read
+:::
 
 ## Creating a *GoParser instance
 
@@ -61,9 +65,9 @@ This is on purpose. If you need to use one of the excluded fields, please [let m
 :::
 
 The `LogFlags` field is used to control the amount of information that the library will write to the `stdout`,
-using the [LoggerCLI](https://mathbalduino.com.br/go-log/docs/advanced/logger_cli). The flags passed to 
-
-TODO: FALAR AQUI SOBRE AS FLAGS DO LOGGERCLI, JUNTO COM A QUESTAO DO JSON + BEAUTIFY
+using the [LoggerCLI](https://mathbalduino.com.br/go-log/docs/advanced/logger_cli) (another library that belongs to
+my personal stack). The flags will be directly forwarded to it. Note that since this lib uses the `LoggerCLI`, it's
+possible to use the `beautify` package, from the `LoggerCLI` itself, to pretty-print the generated output.
 
 ### Focus
 
@@ -119,7 +123,7 @@ func main() {
 }
 ```
 
-With this `Config`, the parser will skip every type name that's different from `"StructB"`.
+With this `Config`, the iterator will skip every type name that's different from `"StructB"`.
 
 ## Iterate interfaces
 

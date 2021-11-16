@@ -17,8 +17,8 @@ This is the most important component of the `*GoFile` struct, so you need to und
 API (that is, basically, just `get`/`set` methods). You will find the `*GoImports` code under the [goImports package](https://github.com/mathbalduino/go-codegen/tree/main/goFile/goImports).
 
 The `*GoImports` struct represents a list of imports made by some package. This list can be the import list inside some 
-file (that belongs to a package, naturally), for example. The important thing is: `*GoImports` stores information about
-the imports being made by some package.
+file (that belongs to a package), for example. The important thing is: `*GoImports` stores information about the imports 
+being made by some package.
 
 The `*GoImports` struct is composed by two fields: `packagePath string` and `imports map[string]string`. 
 More details [here](https://github.com/mathbalduino/go-codegen/blob/main/goFile/goImports/new.go).
@@ -36,7 +36,7 @@ You can create a new `*GoImports` instance using the `New` function, described b
 func New(packagePath string) *GoImports { ... }
 ```
 
-This function takes the package path of the package that owns the import list (represented as the `*GoImports` itself). 
+This function takes the `package path` of the package that owns the import list (represented as the `*GoImports` itself). 
 If you're using `go modules`, the string can be something like `<repository_url>/<path>/<to>/<pkg>`. 
 
 Example: if we're generating code that will belong to the `go-codegen` library, the `packagePath` argument will be 
@@ -57,7 +57,7 @@ alias will be returned.
 
 :::note
 The aliases will always be used when the final code is generated, even if they're not required (`import fmt "fmt"` instead
-of `import "fmt"`, for example)
+of just `import "fmt"`, for example)
 :::
 
 ### AliasFromPath
@@ -70,8 +70,8 @@ If you want to query the alias used to represent some imported package, you can 
 the returned `string` is empty, there's no import with the given package path inside the import list.
 
 :::note
-This method is very useful when generating code. I frequently need to know the correct alias of some import, and 
-querying the import list is the best option
+This method is very useful when generating code. I frequently need to know what will be the alias of some import,
+and querying the import list is the best option
 :::
 
 ### MergeImports
@@ -94,7 +94,8 @@ If you have two import lists that belong to two different package paths, this me
 - You merge the import list of the package `B` into the import list of the package `A`
 - Since the package `A` cannot import itself, the method will `panic`
 
-More details [here](https://github.com/mathbalduino/go-codegen/blob/20cc90dac2de869cd647272abfabf5333e692553/goFile/goImports/addImport.go#L20)
+More details [here](https://github.com/mathbalduino/go-codegen/blob/20cc90dac2de869cd647272abfabf5333e692553/goFile/goImports/mergeImports.go)
+and [here](https://github.com/mathbalduino/go-codegen/blob/20cc90dac2de869cd647272abfabf5333e692553/goFile/goImports/addImport.go#L20)
 :::
 
 ### NeedImport
@@ -171,8 +172,8 @@ func main() {
 
 ## *GoFile
 
-The `*GoFile` struct holds information about the file: `name`, the `packageName` (the name, not the path), the `sourceCode` (
-the body of the file) and the `importList` (as an embedded `*GoImports` struct). You will find the `*GoFile` code under
+The `*GoFile` struct holds information about the file: `name`, the `packageName` (the name, not the path), the `sourceCode` 
+(the file data, or code) and the `importList` (as an embedded `*GoImports` struct). You will find the `*GoFile` code under
 the [goFile package](https://github.com/mathbalduino/go-codegen/tree/main/goFile).
 
 This struct will have all the methods from `*GoImports`, plus the ones describe below.
@@ -193,6 +194,11 @@ persisted. If you're creating a file for the `go-codegen` library root package, 
 // New(filename, packageName, packagePath)
 New("exampleFileName", "parser", "github.com/mathbalduino/go-codegen")
 ```
+
+:::caution
+If you pass the wrong `packageName`, your package will not compile, since it will have 2 different package names. **_Pay 
+attention_**
+:::
 
 ### AddCode
 
@@ -250,13 +256,13 @@ This method will build the content of the file, letting it ready to be compiled.
 The `headerTitle` arg is just a string that will be put inside the file copyright comment section (right at the header).
 Usually, I use something like `"<library>/<import>/<path> v1.0.0"`, but you can use anything.
 
-The `filepath` arg is the absolute `filesystem` **_folder_** path that the file will be persisted. It is used to process
-the import list of the file, format it (the underlying build tool needs this to get the context) and, of course, persist 
-it.
+The `filepath` arg is the absolute `filesystem` **_folder and filename_** path that the file will be persisted. It is used
+to process the import list of the file, format it (the underlying build tool needs this to get the context) and, of course,
+persist it.
 
 :::info
 In this step, the [imports.Process](https://pkg.go.dev/golang.org/x/tools/imports#Process) will be applied to the final
-file content, adjusting the imports (formatting and removing unused imports)
+file content, adjusting the imports (extra formatting, if needed, and removing unused imports)
 :::
 
 ### Example
@@ -289,7 +295,7 @@ func main() {
 	//    ||   GitLab:    @mathbalduino 
 	//    ||   Instagram: @mathbalduino 
 	//    ||   Twitter:   @mathbalduino 
-	//    ||   WebSite:   mathbalduino.com.br 
+	//    ||   WebSite:   mathbalduino.com.br/go-codegen
 	//    || 
 	//    */
 	// 
@@ -307,5 +313,5 @@ func main() {
 
 :::tip
 The comment section will not override the package documentation, since it's not attached to the `package` keyword. You can
-freely use a `doc.go` file in the same package folder to define its documentation
+safely use a `doc.go` file in the same package folder to define its documentation
 :::

@@ -97,7 +97,7 @@ If you want to test some `types.Object` to see if you can access it from some sp
 function, with some package information.
 
 The object `pkgA.TypeA` is accessible within the package `pkgB`, because it is exported. The `pkgA.typeB` object is 
-accessible within the package `pkgA`, even being private, because it is the same package. And so goes on...
+accessible within the package `pkgA`, even being private, because it is the same package. And so on...
 
 ## TypeIsAccessible
 
