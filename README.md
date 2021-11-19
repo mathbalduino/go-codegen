@@ -1,4 +1,4 @@
-# go-codegen
+# go-codegen [![Tests](https://github.com/mathbalduino/go-codegen/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/mathbalduino/go-codegen/actions/workflows/go.yml) [![codecov](https://codecov.io/gh/mathbalduino/go-codegen/branch/main/graph/badge.svg?token=EUF064OND3)](https://codecov.io/gh/mathbalduino/go-codegen)
 
 Docs live at <a href="https://mathbalduino.com.br/go-codegen" target="_blank">mathbalduino.com.br/go-codegen</a>
 
