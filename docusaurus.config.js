@@ -73,14 +73,47 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
                 label: 'Introduction',
                 to: '/docs/intro',
               },
+              {
+                label: '*GoParser API',
+                to: '/docs/go-parser-api',
+              },
+              {
+                label: 'Helpers',
+                to: '/docs/helpers',
+              },
+              {
+                label: '*GoFile',
+                to: '/docs/go-file',
+              },
+              {
+                label: '*TsFile',
+                to: '/docs/ts-file',
+              },
             ],
           },
           {
             title: 'Author',
             items: [
               {
-                label: 'mathbalduino.com.br',
-                href: 'https://mathbalduino.com.br',
+                label: 'Matheus Leonel Balduino',
+                href: 'https://mathbalduino.com.br/about',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/mathbalduino',
+              },
+              {
+                label: 'Instagram',
+                href: 'https://instagram.com/mathbalduino',
+              },
+            ],
+          },
+          {
+            title: 'Other Libs',
+            items: [
+              {
+                label: 'go-log',
+                href: 'https://mathbalduino.com.br/go-log',
               },
             ],
           },
