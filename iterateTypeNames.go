@@ -6,13 +6,13 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type fileTypeNamesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
+type typeNamesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
 
-// iterateFileTypeNames will iterate over all the typeNames inside the parsed files.
+// iterateTypeNames will iterate over all the typeNames inside the parsed files.
 //
 // Note that if the focus is set to typeName, it will iterate only over the specified
 // typeName
-func (p *GoParser) iterateFileTypeNames(callback fileTypeNamesIterator) error {
+func (p *GoParser) iterateTypeNames(callback typeNamesIterator) error {
 	packageFilesIterator := func(file *ast.File, typePkg *packages.Package, parentLog LoggerCLI) error {
 		if len(file.Scope.Objects) == 0 {
 			parentLog.Debug("Skipped (zero objects)...")
