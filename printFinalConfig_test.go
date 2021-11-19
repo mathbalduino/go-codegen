@@ -435,6 +435,271 @@ func TestPrintFinalConfig(t *testing.T) {
 			t.Fatalf("Log.Debug was expected to be called one time")
 		}
 	})
+	t.Run("Print the correct final configuration, with LogDebug", func(t *testing.T) {
+		config := Config{
+			true,
+			"abc",
+			[]string{},
+			token.NewFileSet(),
+			[]string{},
+			nil,
+			LogDebug,
+		}
+		log := &mockLoggerCLI{}
+		calls := 0
+		pattern := "somePattern"
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
+			calls += 1
+
+			if msgFormat != finalConfigTemplate {
+				t.Fatalf("Wrong Log.Debug template")
+			}
+			if len(args) != 8 {
+				t.Fatalf("Wrong Log.Debug variadic args")
+			}
+			if args[0].(string) != pattern {
+				t.Fatalf("Wrong Log.Debug pattern")
+			}
+			if args[1].(bool) != config.Tests {
+				t.Fatalf("Wrong Log.Debug tests boolean")
+			}
+			if args[2].(string) != config.Dir {
+				t.Fatalf("Wrong Log.Debug dir string")
+			}
+			if !reflect.DeepEqual(args[3].([]string), config.Env) {
+				t.Fatalf("Wrong Log.Debug Env slice")
+			}
+			if !reflect.DeepEqual(args[4].([]string), config.BuildFlags) {
+				t.Fatalf("Wrong Log.Debug BuildFlags slice")
+			}
+			if args[5].(string) != nilFocusStr {
+				t.Fatalf("Wrong Log.Debug focus string")
+			}
+			if args[6].(string) != notNilFsetStr {
+				t.Fatalf("Wrong Log.Debug Fset string")
+			}
+			if args[7].(string) != "LogDebug" {
+				t.Fatalf("Wrong Log.Debug LogFlags string")
+			}
+			return log
+		}
+		printFinalConfig(pattern, config, log)
+		if calls != 1 {
+			t.Fatalf("Log.Debug was expected to be called one time")
+		}
+	})
+	t.Run("Print the correct final configuration, with LogInfo", func(t *testing.T) {
+		config := Config{
+			true,
+			"abc",
+			[]string{},
+			token.NewFileSet(),
+			[]string{},
+			nil,
+			LogInfo,
+		}
+		log := &mockLoggerCLI{}
+		calls := 0
+		pattern := "somePattern"
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
+			calls += 1
+
+			if msgFormat != finalConfigTemplate {
+				t.Fatalf("Wrong Log.Debug template")
+			}
+			if len(args) != 8 {
+				t.Fatalf("Wrong Log.Debug variadic args")
+			}
+			if args[0].(string) != pattern {
+				t.Fatalf("Wrong Log.Debug pattern")
+			}
+			if args[1].(bool) != config.Tests {
+				t.Fatalf("Wrong Log.Debug tests boolean")
+			}
+			if args[2].(string) != config.Dir {
+				t.Fatalf("Wrong Log.Debug dir string")
+			}
+			if !reflect.DeepEqual(args[3].([]string), config.Env) {
+				t.Fatalf("Wrong Log.Debug Env slice")
+			}
+			if !reflect.DeepEqual(args[4].([]string), config.BuildFlags) {
+				t.Fatalf("Wrong Log.Debug BuildFlags slice")
+			}
+			if args[5].(string) != nilFocusStr {
+				t.Fatalf("Wrong Log.Debug focus string")
+			}
+			if args[6].(string) != notNilFsetStr {
+				t.Fatalf("Wrong Log.Debug Fset string")
+			}
+			if args[7].(string) != "LogInfo" {
+				t.Fatalf("Wrong Log.Debug LogFlags string")
+			}
+			return log
+		}
+		printFinalConfig(pattern, config, log)
+		if calls != 1 {
+			t.Fatalf("Log.Debug was expected to be called one time")
+		}
+	})
+	t.Run("Print the correct final configuration, with LogWarn", func(t *testing.T) {
+		config := Config{
+			true,
+			"abc",
+			[]string{},
+			token.NewFileSet(),
+			[]string{},
+			nil,
+			LogWarn,
+		}
+		log := &mockLoggerCLI{}
+		calls := 0
+		pattern := "somePattern"
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
+			calls += 1
+
+			if msgFormat != finalConfigTemplate {
+				t.Fatalf("Wrong Log.Debug template")
+			}
+			if len(args) != 8 {
+				t.Fatalf("Wrong Log.Debug variadic args")
+			}
+			if args[0].(string) != pattern {
+				t.Fatalf("Wrong Log.Debug pattern")
+			}
+			if args[1].(bool) != config.Tests {
+				t.Fatalf("Wrong Log.Debug tests boolean")
+			}
+			if args[2].(string) != config.Dir {
+				t.Fatalf("Wrong Log.Debug dir string")
+			}
+			if !reflect.DeepEqual(args[3].([]string), config.Env) {
+				t.Fatalf("Wrong Log.Debug Env slice")
+			}
+			if !reflect.DeepEqual(args[4].([]string), config.BuildFlags) {
+				t.Fatalf("Wrong Log.Debug BuildFlags slice")
+			}
+			if args[5].(string) != nilFocusStr {
+				t.Fatalf("Wrong Log.Debug focus string")
+			}
+			if args[6].(string) != notNilFsetStr {
+				t.Fatalf("Wrong Log.Debug Fset string")
+			}
+			if args[7].(string) != "LogWarn" {
+				t.Fatalf("Wrong Log.Debug LogFlags string")
+			}
+			return log
+		}
+		printFinalConfig(pattern, config, log)
+		if calls != 1 {
+			t.Fatalf("Log.Debug was expected to be called one time")
+		}
+	})
+	t.Run("Print the correct final configuration, with LogError", func(t *testing.T) {
+		config := Config{
+			true,
+			"abc",
+			[]string{},
+			token.NewFileSet(),
+			[]string{},
+			nil,
+			LogError,
+		}
+		log := &mockLoggerCLI{}
+		calls := 0
+		pattern := "somePattern"
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
+			calls += 1
+
+			if msgFormat != finalConfigTemplate {
+				t.Fatalf("Wrong Log.Debug template")
+			}
+			if len(args) != 8 {
+				t.Fatalf("Wrong Log.Debug variadic args")
+			}
+			if args[0].(string) != pattern {
+				t.Fatalf("Wrong Log.Debug pattern")
+			}
+			if args[1].(bool) != config.Tests {
+				t.Fatalf("Wrong Log.Debug tests boolean")
+			}
+			if args[2].(string) != config.Dir {
+				t.Fatalf("Wrong Log.Debug dir string")
+			}
+			if !reflect.DeepEqual(args[3].([]string), config.Env) {
+				t.Fatalf("Wrong Log.Debug Env slice")
+			}
+			if !reflect.DeepEqual(args[4].([]string), config.BuildFlags) {
+				t.Fatalf("Wrong Log.Debug BuildFlags slice")
+			}
+			if args[5].(string) != nilFocusStr {
+				t.Fatalf("Wrong Log.Debug focus string")
+			}
+			if args[6].(string) != notNilFsetStr {
+				t.Fatalf("Wrong Log.Debug Fset string")
+			}
+			if args[7].(string) != "LogError" {
+				t.Fatalf("Wrong Log.Debug LogFlags string")
+			}
+			return log
+		}
+		printFinalConfig(pattern, config, log)
+		if calls != 1 {
+			t.Fatalf("Log.Debug was expected to be called one time")
+		}
+	})
+	t.Run("Print the correct final configuration, with LogFatal", func(t *testing.T) {
+		config := Config{
+			true,
+			"abc",
+			[]string{},
+			token.NewFileSet(),
+			[]string{},
+			nil,
+			LogFatal,
+		}
+		log := &mockLoggerCLI{}
+		calls := 0
+		pattern := "somePattern"
+		log.mockDebug = func(msgFormat string, args ...interface{}) LoggerCLI {
+			calls += 1
+
+			if msgFormat != finalConfigTemplate {
+				t.Fatalf("Wrong Log.Debug template")
+			}
+			if len(args) != 8 {
+				t.Fatalf("Wrong Log.Debug variadic args")
+			}
+			if args[0].(string) != pattern {
+				t.Fatalf("Wrong Log.Debug pattern")
+			}
+			if args[1].(bool) != config.Tests {
+				t.Fatalf("Wrong Log.Debug tests boolean")
+			}
+			if args[2].(string) != config.Dir {
+				t.Fatalf("Wrong Log.Debug dir string")
+			}
+			if !reflect.DeepEqual(args[3].([]string), config.Env) {
+				t.Fatalf("Wrong Log.Debug Env slice")
+			}
+			if !reflect.DeepEqual(args[4].([]string), config.BuildFlags) {
+				t.Fatalf("Wrong Log.Debug BuildFlags slice")
+			}
+			if args[5].(string) != nilFocusStr {
+				t.Fatalf("Wrong Log.Debug focus string")
+			}
+			if args[6].(string) != notNilFsetStr {
+				t.Fatalf("Wrong Log.Debug Fset string")
+			}
+			if args[7].(string) != "LogFatal" {
+				t.Fatalf("Wrong Log.Debug LogFlags string")
+			}
+			return log
+		}
+		printFinalConfig(pattern, config, log)
+		if calls != 1 {
+			t.Fatalf("Log.Debug was expected to be called one time")
+		}
+	})
 	t.Run("Print the correct final configuration", func(t *testing.T) {
 		config := Config{
 			true,

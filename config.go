@@ -1,6 +1,7 @@
 package parser
 
 import (
+	logger "github.com/mathbalduino/go-log"
 	"go/token"
 	"golang.org/x/tools/go/packages"
 )
@@ -77,7 +78,7 @@ type Config struct {
 	//
 	// Note that you can use a bitwise-AND operator to combine
 	// multiple flags
-	LogFlags uint
+	LogFlags uint64
 }
 
 // packagesLoadConfig returns the configuration struct that is used to
@@ -115,14 +116,32 @@ const packagesConfigMode = packages.NeedImports |
 	packages.NeedTypesInfo
 
 const (
-	// LogTrace enables Trace log levels
-	LogTrace uint = 1 << iota
+	// LogTrace is a flag that if used will enable
+	// Trace logs
+	LogTrace = logger.LvlTrace
 
-	// LogDebug enabled Debug log levels
-	LogDebug
+	// LogDebug is a flag that if used will enable
+	// Debug logs
+	LogDebug = logger.LvlDebug
+
+	// LogInfo is a flag that if used will enable
+	// Info logs
+	LogInfo = logger.LvlInfo
+
+	// LogWarn is a flag that if used will enable
+	// Warn logs
+	LogWarn = logger.LvlWarn
+
+	// LogError is a flag that if used will enable
+	// Error logs
+	LogError = logger.LvlError
+
+	// LogFatal is a flag that if used will enable
+	// Fatal logs
+	LogFatal = logger.LvlFatal
 
 	// LogJSON set the logs to be parsed
 	// to JSON before printing it to the
 	// stdout (one per line)
-	LogJSON
+	LogJSON = uint64(1 << 6)
 )

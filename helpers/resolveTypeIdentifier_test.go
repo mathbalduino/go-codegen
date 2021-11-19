@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	parser "github.com/mathbalduino/go-codegen"
 	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/types"
 	"testing"
@@ -273,7 +274,7 @@ func TestResolveTypeIdentifier(t *testing.T) {
 				ch <- true
 			}()
 
-			ResolveTypeIdentifier(&fakeType{}, nil, loggerCLI.New(false, false, false))
+			ResolveTypeIdentifier(&fakeType{}, nil, loggerCLI.New(false, parser.LogFatal))
 		}()
 
 		<-ch

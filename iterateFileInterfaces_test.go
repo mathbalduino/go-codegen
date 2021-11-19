@@ -43,7 +43,7 @@ func TestIterateFileInterfaces(t *testing.T) {
 				}},
 				TypesInfo: typesInfo,
 			}},
-			logger:  loggerCLI.New(false, false, false),
+			logger:  loggerCLI.New(false, 0),
 			fileSet: fileSet,
 		}
 	}

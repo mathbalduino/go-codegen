@@ -42,7 +42,19 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 			logFlags = "LogTrace | "
 		}
 		if config.LogFlags&LogDebug != 0 {
-			logFlags = "LogDebug"
+			logFlags = "LogDebug | "
+		}
+		if config.LogFlags&LogInfo != 0 {
+			logFlags = "LogInfo | "
+		}
+		if config.LogFlags&LogWarn != 0 {
+			logFlags = "LogWarn | "
+		}
+		if config.LogFlags&LogError != 0 {
+			logFlags = "LogError | "
+		}
+		if config.LogFlags&LogFatal != 0 {
+			logFlags = "LogFatal"
 		}
 		logFlags = strings.TrimSuffix(logFlags, " | ")
 	}

@@ -9,14 +9,14 @@ import (
 
 func TestIteratePackages(t *testing.T) {
 	t.Run("Should return nil when there are no packages", func(t *testing.T) {
-		p := &GoParser{pkgs: nil, logger: loggerCLI.New(false, false, false)}
+		p := &GoParser{pkgs: nil, logger: loggerCLI.New(false, 0)}
 		e := p.iteratePackages(nil)
 		if e != nil {
 			t.Fatalf("Expected to be nil")
 		}
 	})
 	t.Run("Should skip packages with error", func(t *testing.T) {
-		m := loggerCLI.New(false, false, false)
+		m := loggerCLI.New(false, 0)
 		okPkg := "c"
 		p := &GoParser{
 			pkgs: []*packages.Package{
@@ -43,7 +43,7 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should stop iteration when the callback returns any error, forwarding the returned error", func(t *testing.T) {
-		m := loggerCLI.New(false, false, false)
+		m := loggerCLI.New(false, 0)
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{Errors: nil},
@@ -64,7 +64,7 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should skip any package that is not the focus", func(t *testing.T) {
-		m := loggerCLI.New(false, false, false)
+		m := loggerCLI.New(false, 0)
 		focusPkg := "focusedPkg"
 		p := &GoParser{
 			pkgs: []*packages.Package{
@@ -91,7 +91,7 @@ func TestIteratePackages(t *testing.T) {
 		}
 	})
 	t.Run("Should call the callback for every package that needs to be iterated and return nil error", func(t *testing.T) {
-		m := loggerCLI.New(false, false, false)
+		m := loggerCLI.New(false, 0)
 		p := &GoParser{
 			pkgs: []*packages.Package{
 				{PkgPath: "a", Errors: nil},
