@@ -35,13 +35,13 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 
 	logFlags := "-"
 	if config.LogFlags != 0 {
-		if config.LogFlags & LogJSON != 0 {
+		if config.LogFlags&LogJSON != 0 {
 			logFlags = "LogJSON | "
 		}
-		if config.LogFlags & LogTrace != 0 {
+		if config.LogFlags&LogTrace != 0 {
 			logFlags = "LogTrace | "
 		}
-		if config.LogFlags & LogDebug != 0 {
+		if config.LogFlags&LogDebug != 0 {
 			logFlags = "LogDebug"
 		}
 		logFlags = strings.TrimSuffix(logFlags, " | ")
