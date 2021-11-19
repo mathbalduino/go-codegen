@@ -52,7 +52,7 @@ type Config struct {
 	Fset 		*token.FileSet
 	BuildFlags 	[]string
 	Focus 		*ParserFocus
-	LogFlags 	uint
+	LogFlags 	uint64
 }
 ```
 
@@ -67,7 +67,15 @@ This is on purpose. If you need to use one of the excluded fields, please [let m
 The `LogFlags` field is used to control the amount of information that the library will write to the `stdout`,
 using the [LoggerCLI](https://mathbalduino.com.br/go-log/docs/advanced/logger_cli) (another library that belongs to
 my personal stack). The flags will be directly forwarded to it. Note that since this lib uses the `LoggerCLI`, it's
-possible to use the `beautify` package, from the `LoggerCLI` itself, to pretty-print the generated output.
+possible to use the `beautify` package, from the `LoggerCLI` itself, to pretty-print the generated output. You can see 
+the available flags at the [go-log](https://mathbalduino.com.br/go-log/docs/basic-concepts/configuration#lvlsenabled-usage)
+official documentation (note that the `go-codegen` library re-exports these flags, so you don't need to point to `go-log`
+directly).
+
+:::tip
+In addition to the original `go-log` flags, there's an extra one: `LogJSON`. This extra flag belongs to the `go-codegen`
+itself, and is used to control whether the logs are converted (or not) to `json`, before being sent to the `stdout`
+:::
 
 ### Focus
 
