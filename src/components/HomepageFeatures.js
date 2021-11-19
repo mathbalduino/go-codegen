@@ -4,137 +4,150 @@ import styles from './HomepageFeatures.module.css';
 import CodeBlock from '@theme/CodeBlock';
 import Link from '@docusaurus/Link';
 
-const easyToUseCode = `package main
-
-import "github.com/mathbalduino/go-log"
-
-func main() {
-  // Outputs to stdout
-  yourLogger := logger.NewDefault()
-
-  yourLogger.Info("New INFO log message")
-  // [ INFO ] New INFO log message
-  
-  yourLogger.Error("New ERROR log message")
-  // [ ERROR ] New ERROR log message
-  // ...
-}
-
-`
-
-const baseFieldsCode = `package main
+const parseGoStructs = `package main
 
 import (
-  "github.com/mathbalduino/go-log"
-  "os"
-)
-
-func main() {
-  // Outputs to stdout
-  userLogger := logger.New(logger.DefaultConfig()).
-    Fields(logger.LogFields{"module": "user"}).
-    Outputs(logger.OutputJsonToWriter(os.Stdout, nil))
-
-  userLogger.Info("New log")
-  // { "lvl": 4, "module": "user", "msg": "New log" }
-}
-`
-
-const dynamicFieldsCode = `package main
-
-import (
-  "github.com/mathbalduino/go-log"
-  "os"
-  "time"
-)
-
-func main() {
-  // Outputs to stdout
-  userLogger := logger.New(logger.DefaultConfig()).
-    Fields(logger.LogFields{"module": "user"}).
-    PreHooks(logger.Hooks{
-      "timestamp": func(logger.Log) interface{} {
-        return time.Now().UnixNano()
-      },
-    }).
-    Outputs(logger.OutputJsonToWriter(os.Stdout, nil))
-
-  userLogger.Info("New log", logger.LogFields{"id": 98})
-  // { "id": 98, "lvl": 4, "module": "user", 
-  //    "msg": "New log", "timestamp": 1633182921043120309 }
-}
-
-`
-
-const outputCode = `package main
-
-import (
-  "github.com/mathbalduino/go-log"
   "fmt"
+  "github.com/mathbalduino/go-codegen"
+  "go/types"
 )
 
-// Parse log fields to JSON and send them to the cloud
-func OutputToCloud(_ uint64, _ string, fields logger.LogFields) {
-  parseToJsonAndSendToCloud(fields)
+func main() {
+  parser, e := parser.NewGoParser("#your_pattern_string#", parser.Config{})
+  if e != nil {
+    panic(e)
+  }
+  
+  // Will print the name of every struct inside the parsed code
+  parser.IterateStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error {
+    fmt.Println(struct_.Name())
+    return nil
+  })
 }
+`
 
-func OutputToStdout(lvl uint64, msg string, _ logger.LogFields) {
-  fmt.Printf("LogLevel: %d | LogMsg: %s\\n", lvl, msg)
-}
+const parseGoInterfaces = `package main
+
+import (
+  "fmt"
+  "github.com/mathbalduino/go-codegen"
+  "go/types"
+)
 
 func main() {
-  yourLogger := logger.New(logger.DefaultConfig()).
-    Outputs(OutputToStdout, OutputToCloud)
+  parser, e := parser.NewGoParser("#your_pattern_string#", parser.Config{})
+  if e != nil {
+    panic(e)
+  }
   
-  yourLogger.Info("New log") 
-  // stdout: "LogLevel: 4 | LogMsg: New log\\n"
-  // cloud: { "lvl": 4, "msg": "New log" }
+  // Will print the name of every interface inside the parsed code
+  parser.IterateInterfaces(func(interface_ *types.TypeName, logger parser.LoggerCLI) error {
+    fmt.Println(interface_.Name())
+    return nil
+  })
+}
+`
+
+const focusCode = `package main
+
+import (
+  "fmt"
+  "github.com/mathbalduino/go-codegen"
+)
+
+func main() {
+  // Will skip any interface that doesn't have its name
+  // equal to "SomeInterface"
+  cfg := parser.Config{
+    Focus: &parser.FocusTypeName("SomeInterface")
+  }
+  
+  parser, e := parser.NewGoParser("#your_pattern_string#", cfg)
+  if e != nil {
+    panic(e)
+  }
+  
+  parser.IterateInterfaces(func(interface_ *types.TypeName, logger parser.LoggerCLI) error {
+    // Callback will be executed only if the interface name
+    // is equal to "SomeInterface"
+    fmt.Println(interface_.Name())
+    
+    return nil
+  })
+}
+
+`
+
+const filesCode = `package main
+
+import (
+  "fmt"
+  "github.com/mathbalduino/go-codegen"
+  "github.com/mathbalduino/go-codegen/goFile"
+)
+
+func main() {
+  parser, e := parser.NewGoParser("#your_pattern_string#", parser.Config{})
+  if e != nil {
+    panic(e)
+  }
+  // Will create the "exampleFile" inside the "#some_pkg_name#" package, using the "#the_some_pkg_path#" package import path
+  file := goFile.New("exampleFile", "#some_pkg_name#", "#the_some_pkg_path#")
+  parser.IterateInterfaces(func(interface_ *types.TypeName, logger parser.LoggerCLI) error {
+    // Just an example of an extremely simplified code generation. The generated
+    // file will have a constant string with the name of every parsed interface
+    file.AddCode(fmt.Sprintf("const InterfaceName_%s = \\"%s\\"\\n", interface_.Name(), interface_.Name()))
+    return nil
+  })
+  // The file will be saved to the "#some_folder_path" folder path
+  // The "#some_title#" will be written to the file header (comment section)
+  e = file.Save("#some_title#", "#some_folder_path")
+  if e != nil {
+    panic(e)
+  }
 }
 `
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    header: <CodeBlock className="language-go">{easyToUseCode}</CodeBlock>,
+    title: 'Parse GO Structs',
+    header: <CodeBlock className="language-go">{parseGoStructs}</CodeBlock>,
     description: (
       <>
-        Just create a new default Logger instance and start to focus on your
-        application development
+        Create a new instance of the GO parser and you will be able to parse
+        and gather information about the structs inside your code, using the <Link to={'/docs/go-parser-api#iterate-structs'}>IterateStructs</Link>
       </>
     ),
   },
   {
-    title: 'Base Log Fields',
-    header: <CodeBlock className="language-go">{baseFieldsCode}</CodeBlock>,
+    title: 'Parse GO Interfaces',
+    header: <CodeBlock className="language-go">{parseGoInterfaces}</CodeBlock>,
     description: (
       <>
-        You can define how many <Link to='/docs/basic-concepts/base_fields'>Base fields </Link>
-        as you want. These fields are constant values and will be used to compose every log
-        created by the Logger instance
+        You can gather information about the interfaces too, just use the <Link to={'/docs/go-parser-api#iterate-interfaces'}>IterateInterfaces</Link>
       </>
     ),
   },
   {
-    title: 'Dynamic Log Fields',
-    header: <CodeBlock className="language-go">{dynamicFieldsCode}</CodeBlock>,
+    title: 'Focus',
+    header: <CodeBlock className="language-go">{focusCode}</CodeBlock>,
     description: (
       <>
-        Some fields my need to be calculated every time a new log is created. To solve
-        this problem, you can use <Link to='/docs/basic-concepts/pre_hooks'>PreHooks</Link>,
-        <Link to='/docs/basic-concepts/adhoc_fields'> AdHoc fields</Link> and
-        <Link to='/docs/basic-concepts/post_hooks'> PostHooks</Link>
+        If you don't want to iterate over all the parsed code, you can use
+        the <Link to={'/docs/go-parser-api#focus'}>Focus</Link> feature to
+        skip files, packages or typenames
       </>
     ),
   },
   {
-    title: 'Output configuration',
+    title: 'Files abstraction',
     header: (
-      <CodeBlock className="language-go">{outputCode}</CodeBlock>
+      <CodeBlock className="language-go">{filesCode}</CodeBlock>
     ),
     description: (
       <>
-        Every log has a destiny, and you can set as many <Link to='/docs/basic-concepts/outputs'>Outputs </Link>
-        as you want. If you don't want to implement your own outputs, just use the builtins
+        The library comes with builtin support for <Link to={'/docs/go-file'}>GO</Link> and <Link to={'/docs/ts-file'}>TS</Link> files, including
+        formatting, import list handling (trust me, you don't want to handle it) and persistence
       </>
     ),
   },
