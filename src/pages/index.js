@@ -16,13 +16,20 @@ function HomepageHeader() {
         <img src={mathbalduino_logoM} />
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
+        <div className={styles.buttons} style={{ marginBottom: 'var(--ifm-paragraph-margin-bottom)' }}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
             Read the Introduction 📜
           </Link>
         </div>
+        <Link to='https://github.com/mathbalduino/go-codegen/actions/workflows/go.yml'>
+          <img src="https://github.com/mathbalduino/go-codegen/actions/workflows/go.yml/badge.svg?branch=main" />
+        </Link>
+        &nbsp; &nbsp;
+        <Link to='https://codecov.io/gh/mathbalduino/go-codegen'>
+          <img src="https://codecov.io/gh/mathbalduino/go-codegen/branch/main/graph/badge.svg?token=EUF064OND3"/>
+        </Link>
       </div>
     </header>
   );
