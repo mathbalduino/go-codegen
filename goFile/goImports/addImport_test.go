@@ -43,7 +43,8 @@ func TestAddImport(t *testing.T) {
 				if e != nil {
 					panicked = true
 					if e.(error).Error() != fmt.Sprintf(addUnnecessaryImportError, pkgPath) {
-						t.Fatalf("Wrong panic error")
+						t.Errorf("Wrong panic error")
+						return
 					}
 				}
 				c <- true

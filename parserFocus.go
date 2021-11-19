@@ -79,7 +79,7 @@ type focusLevel string
 
 // focusLevel options
 const (
-	focusPackagePath  focusLevel = "packagePath"
-	focusFilePath     focusLevel = "filePath"
-	focusTypeName     focusLevel = "typeName"
+	focusPackagePath focusLevel = "packagePath"
+	focusFilePath    focusLevel = "filePath"
+	focusTypeName    focusLevel = "typeName"
 )
