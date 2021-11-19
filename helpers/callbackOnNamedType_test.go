@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	parser "github.com/mathbalduino/go-codegen"
 	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/types"
 	"testing"
@@ -136,7 +137,7 @@ func TestCallbackOnNamedType(t *testing.T) {
 				ch <- true
 			}()
 
-			CallbackOnNamedType(&fakeType{}, callback, loggerCLI.New(false, false, false))
+			CallbackOnNamedType(&fakeType{}, callback, loggerCLI.New(false, parser.LogFatal))
 		}()
 
 		<-ch

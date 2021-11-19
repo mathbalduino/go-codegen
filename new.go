@@ -57,11 +57,7 @@ type GoParser struct {
 //		 might be matched by multiple patterns: in general it is not possible
 //		 to determine which packages correspond to which patterns.
 func NewGoParser(pattern string, config Config) (*GoParser, error) {
-	logger := loggerCLI.New(
-		config.LogFlags&LogJSON != 0,
-		config.LogFlags&LogDebug != 0,
-		config.LogFlags&LogTrace != 0,
-	)
+	logger := loggerCLI.New(config.LogFlags&LogJSON != 0, config.LogFlags&(^LogJSON))
 	printFinalConfig(pattern, config, logger)
 	packagesLoadConfig := packagesLoadConfig(config, logger)
 	pkgs, e := packages.Load(packagesLoadConfig, pattern)
