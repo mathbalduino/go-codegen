@@ -54,12 +54,12 @@ func main() {
 		panic(e)
 	}
 	
-	e = goParser.IterateFileStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error { 
+	e = goParser.IterateStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error { 
 		// This method will be called once for every struct inside the parsed GO code
 		// Use the given 'struct_' param to generate your code
 
 		// If you want to stop the iteration, return a non-nil error below
-		// This error will be forwarded to the caller of 'IterateFileStructs'
+		// This error will be forwarded to the caller of 'IterateStructs'
 		return nil
 	})
 	if e != nil {
@@ -92,7 +92,7 @@ func main() {
 	// ... your goParser instance creation
 	
 	f := goFile.New("filename", "packageName", "destination/package/import/path")
-	e := goParser.IterateFileStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error {
+	e := goParser.IterateStructs(func(struct_ *types.TypeName, logger parser.LoggerCLI) error {
 		generatedCode := generateCodeUsingTemplate(struct_) // or, whatever you want
 		f.AddCode(generatedCode)
 		return nil
