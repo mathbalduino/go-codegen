@@ -6,7 +6,7 @@ import (
 )
 
 // printFinalConfig will print, as a Debug log, the final configuration of the parser
-func printFinalConfig(pattern string, config Config, log LoggerCLI) {
+func printFinalConfig(pattern string, config Config, logger LoggerCLI) {
 	focus := nilFocusStr
 	if config.Focus != nil {
 		packagePath, filePath, typeName := "nil", "nil", "nil"
@@ -33,8 +33,15 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		dir = config.Dir
 	}
 
-	logFlags := "-"
-	if config.LogFlags != 0 {
+	loggerMsg := nilLoggerStr
+	if config.Logger != nil {
+		loggerMsg = notNilLoggerStr
+	}
+
+	logFlags := emptyLogFlagsStr
+	if config.Logger != nil {
+		logFlags = ignoredLogFlagsStr
+	} else if config.LogFlags != 0 {
 		if config.LogFlags&LogJSON != 0 {
 			logFlags = "LogJSON | "
 		}
@@ -59,7 +66,7 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		logFlags = strings.TrimSuffix(logFlags, " | ")
 	}
 
-	log.Debug(finalConfigTemplate,
+	logger.Debug(finalConfigTemplate,
 		pattern,
 		config.Tests,
 		dir,
@@ -67,6 +74,7 @@ func printFinalConfig(pattern string, config Config, log LoggerCLI) {
 		config.BuildFlags,
 		focus,
 		fset,
+		loggerMsg,
 		logFlags,
 	)
 }
@@ -75,6 +83,10 @@ const emptyDirStr = "./"
 const nilFsetStr = "Using the FileSet of the library"
 const notNilFsetStr = "Using the FileSet provided by the client"
 const nilFocusStr = "Focus not defined (will not skip anything)"
+const nilLoggerStr = "Logger not defined (will be created using LogFlags)"
+const notNilLoggerStr = "Using the Logger instance provided by the client"
+const emptyLogFlagsStr = "unset"
+const ignoredLogFlagsStr = "Ignored (Logger field is set)"
 
 const finalConfigTemplate = `New GoParser created. Final configuration:
 Pattern: %s
@@ -85,6 +97,7 @@ Config: {
 	BuildFlags: %v
 	Focus: %s
 	Fset: %s
+	Logger: %s
 	LogFlags: %s
 }`
 

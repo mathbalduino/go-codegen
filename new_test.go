@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/token"
 	"testing"
 )
@@ -24,7 +25,30 @@ func TestNewGoParser(t *testing.T) {
 			t.Fatalf("GoParser expected to be not nil")
 		}
 	})
-	t.Run("The returned GoParser pkgs, focus, log and fileSet should be filled", func(t *testing.T) {
+	t.Run("The returned GoParser pkgs, focus, log (given by the user) and fileSet fields should be filled", func(t *testing.T) {
+		logger := loggerCLI.New(false, 0)
+		config := Config{Focus: &Focus{}, Fset: token.NewFileSet(), Logger: logger}
+		p, _ := NewGoParser("--inexistentPackage--", config)
+		if p == nil {
+			t.Fatalf("GoParser expected to be not nil")
+		}
+		if p.pkgs == nil {
+			t.Fatalf("GoParser.pkgs expected to be not nil")
+		}
+		if p.focus != config.Focus {
+			t.Fatalf("GoParser.focus expected to be equal to config.Focus")
+		}
+		if p.logger == nil {
+			t.Fatalf("GoParser.log expected to not be nil")
+		}
+		if p.logger != logger {
+			t.Fatalf("GoParser.log expected to not be nil")
+		}
+		if p.fileSet != config.Fset {
+			t.Fatalf("GoParser.fileSet expected to be equal to config.Fset")
+		}
+	})
+	t.Run("The returned GoParser pkgs, focus, log (dynamically created) and fileSet fields should be filled", func(t *testing.T) {
 		config := Config{Focus: &Focus{}, Fset: token.NewFileSet()}
 		p, _ := NewGoParser("--inexistentPackage--", config)
 		if p == nil {

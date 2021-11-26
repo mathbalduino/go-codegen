@@ -72,9 +72,16 @@ type Config struct {
 	// typenames, etc)
 	Focus *Focus
 
+	// Logger is an instance of the LoggerCLI, already created
+	// by the lib user.
+	//
+	// Note that by using this field, the value of the LogFlags
+	// field will be ignored
+	Logger LoggerCLI
+
 	// LogFlags controls the logging configuration of the parser.
-	// It can be set using the constants LogTrace, LogDebug and
-	// LogJSON.
+	// It can be set using the constants LogTrace, LogDebug, LogJSON,
+	// etc. If the Logger field is set, this field will be ignored.
 	//
 	// Note that you can use a bitwise-AND operator to combine
 	// multiple flags
@@ -83,7 +90,7 @@ type Config struct {
 
 // packagesLoadConfig returns the configuration struct that is used to
 // call the packages.Load function
-func packagesLoadConfig(config Config, log LoggerCLI) *packages.Config {
+func packagesLoadConfig(config Config) *packages.Config {
 	if config.Fset == nil {
 		config.Fset = token.NewFileSet()
 	}
@@ -99,7 +106,7 @@ func packagesLoadConfig(config Config, log LoggerCLI) *packages.Config {
 		// Constant values, don't exposed
 		Mode: packagesConfigMode,
 		Logf: func(format string, args ...interface{}) {
-			log.Debug(format, args...)
+			config.Logger.Debug(format, args...)
 		},
 
 		// Not used
