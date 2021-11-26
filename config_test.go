@@ -9,14 +9,14 @@ import (
 
 func TestConfig(t *testing.T) {
 	t.Run("If not provided, FileSet should be created", func(t *testing.T) {
-		config := Config{Fset: nil}
-		packagesConfig := packagesLoadConfig(config, loggerCLI.New(true, LogDebug|LogTrace))
+		config := Config{Fset: nil, Logger: loggerCLI.New(true, LogDebug|LogTrace)}
+		packagesConfig := packagesLoadConfig(config)
 		if packagesConfig.Fset == nil {
 			t.Fatal("Fset was expected to be not nil")
 		}
 	})
 	t.Run("The PackagesMode should be equal to the defined constant", func(t *testing.T) {
-		packagesConfig := packagesLoadConfig(Config{}, loggerCLI.New(true, LogDebug|LogTrace))
+		packagesConfig := packagesLoadConfig(Config{Logger: loggerCLI.New(true, LogDebug|LogTrace)})
 		if packagesConfig.Mode != packagesConfigMode {
 			t.Fatal("The mode is not set correctly")
 		}
@@ -37,14 +37,14 @@ func TestConfig(t *testing.T) {
 			return mock
 		}
 
-		packagesConfig := packagesLoadConfig(Config{}, mock)
+		packagesConfig := packagesLoadConfig(Config{Logger: mock})
 		packagesConfig.Logf(logMsg, logArgs...)
 		if debugCalls != 1 {
 			t.Fatalf("LogCLI Debug was expected to be called one time")
 		}
 	})
 	t.Run("PackagesConfig Context, ParseFile and Overlay should be always nil", func(t *testing.T) {
-		packagesConfig := packagesLoadConfig(Config{}, loggerCLI.New(true, LogDebug|LogTrace))
+		packagesConfig := packagesLoadConfig(Config{Logger: loggerCLI.New(true, LogDebug|LogTrace)})
 		if packagesConfig.Context != nil {
 			t.Fatalf("Context was expected to be nil")
 		}
@@ -62,8 +62,9 @@ func TestConfig(t *testing.T) {
 			Env:        []string{"a", "b", "c"},
 			BuildFlags: []string{"1", "2", "3"},
 			Fset:       token.NewFileSet(),
+			Logger:     loggerCLI.New(true, LogDebug|LogTrace),
 		}
-		packagesConfig := packagesLoadConfig(config, loggerCLI.New(true, LogDebug|LogTrace))
+		packagesConfig := packagesLoadConfig(config)
 		if packagesConfig.Tests != config.Tests {
 			t.Fatalf("PackagesConfig.Tests was expected to be equal to config.Tests")
 		}
