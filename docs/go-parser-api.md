@@ -52,6 +52,7 @@ type Config struct {
 	Fset 		*token.FileSet
 	BuildFlags 	[]string
 	Focus 		*ParserFocus
+	Logger      LoggerCLI
 	LogFlags 	uint64
 }
 ```
@@ -64,6 +65,10 @@ You will notice that the `packages.Config` has many fields that aren't present i
 This is on purpose. If you need to use one of the excluded fields, please [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
 :::
 
+The `Logger` field is used to allow the library user to pass an already created logger instance, instead of relying on
+the one created by the library itself. This is extremely useful, since this library will usually be used to compose
+other libraries, the logger instance usually already exists.
+
 The `LogFlags` field is used to control the amount of information that the library will write to the `stdout`,
 using the [LoggerCLI](https://mathbalduino.com.br/go-log/docs/advanced/logger_cli) (another library that belongs to
 my personal stack). The flags will be directly forwarded to it. Note that since this lib uses the `LoggerCLI`, it's
@@ -75,6 +80,11 @@ directly).
 :::tip
 In addition to the original `go-log` flags, there's an extra one: `LogJSON`. This extra flag belongs to the `go-codegen`
 itself, and is used to control whether the logs are converted (or not) to `json`, before being sent to the `stdout`
+:::
+
+:::note
+If you set the value of the `Logger` field, the `LogFlags` field will be completely ignored, since it is only used when
+the library needs to dynamically create a new `LoggerCLI` instance
 :::
 
 ### Focus
