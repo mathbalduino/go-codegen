@@ -15,10 +15,10 @@ func TestSourceCode(t *testing.T) {
 			&tsImport{"some/path", "DefaultImportName", []string{"NamedA", "NamedB", "NamedC"}},
 			&tsImport{"some/path/2", "DefaultImportName_2", []string{"NamedA_2", "NamedB_2", "NamedC_2"}})
 		code := i.SourceCode()
-		expectedCode := "import DefaultImportName, { NamedA, NamedB, NamedC } from 'some/path'\n" +
+		expectedCode := "\nimport DefaultImportName, { NamedA, NamedB, NamedC } from 'some/path'\n" +
 			"import DefaultImportName_2, { NamedA_2, NamedB_2, NamedC_2 } from 'some/path/2'\n"
 		if code != expectedCode {
-			t.Fatalf("Expected an empty string")
+			t.Fatalf("Expected another string")
 		}
 	})
 }

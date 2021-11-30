@@ -12,7 +12,7 @@ func (i TsImports) SourceCode() string {
 		return ""
 	}
 
-	sourceCode := ""
+	sourceCode := "\n"
 	for _, currImport := range i {
 		importCode := "import "
 		if currImport.defaultImport != "" {

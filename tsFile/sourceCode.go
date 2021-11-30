@@ -24,8 +24,6 @@ func (f *TsFile) SourceCode(headerTitle string) []byte {
 }
 
 const sourceCodeTmpl = `/*%s*/
-
 %s
-
 %s
 `
