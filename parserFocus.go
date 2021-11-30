@@ -1,6 +1,9 @@
 package parser
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
 
 // FocusPackagePath will tell the parser to look for a
 // specific package
@@ -35,6 +38,20 @@ func FocusTypeName(typeName string) *Focus {
 	}
 }
 
+func MergeFocus(f1 *Focus, f2 *Focus) *Focus {
+	f := *f1
+	if f2.packagePath != nil {
+		f.packagePath = f2.packagePath
+	}
+	if f2.filePath != nil {
+		f.filePath = f2.filePath
+	}
+	if f2.typeName != nil {
+		f.typeName = f2.typeName
+	}
+	return &f
+}
+
 // -----
 
 // Focus tells to the parser
@@ -60,16 +77,28 @@ func (f *Focus) is(lvl focusLevel, value string) bool {
 		return true
 	}
 
-	// If the focus lvl equivalent is nil, then return true
+	// If the focus lvl equivalent is nil, return true
 	// because the focus is in something else
 
 	switch lvl {
 	case focusPackagePath:
-		return f.packagePath == nil || *f.packagePath == value
+		if f.packagePath == nil {
+			return true
+		}
+		b, _ := regexp.MatchString(*f.packagePath, value)
+		return b
 	case focusFilePath:
-		return f.filePath == nil || *f.filePath == value
+		if f.filePath == nil {
+			return true
+		}
+		b, _ := regexp.MatchString(*f.filePath, value)
+		return b
 	case focusTypeName:
-		return f.typeName == nil || *f.typeName == value
+		if f.typeName == nil {
+			return true
+		}
+		b, _ := regexp.MatchString(*f.typeName, value)
+		return b
 	default:
 		panic(fmt.Errorf("unrecognizable focus: %s", lvl))
 	}
