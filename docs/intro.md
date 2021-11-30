@@ -115,12 +115,12 @@ func main() {
 ## Focus
 
 The `*GoParser`, by default, will iterate over the entire parsed code. You can control this behavior by giving
-a `*ParserFocus` to the `Config`, at the `*GoParser` creation, that tells to the `*GoParser`
+a `*Focus` to the `Config`, at the `*GoParser` creation, that tells to the `*GoParser`
 to iterate only over some `typeName`, `filePath`, etc (for details, see the subsection [Focus](./go-parser-api.md#focus)):
 
 ```go
-func FocusPackagePath(packagePath string) *ParserFocus { ... }
-func FocusTypeName(typeName string) *ParserFocus { ... }
+func FocusPackagePath(packagePath string) *Focus { ... }
+func FocusTypeName(typeName string) *Focus { ... }
 // ...
 ```
 

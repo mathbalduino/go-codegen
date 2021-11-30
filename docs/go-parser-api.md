@@ -51,7 +51,7 @@ type Config struct {
 	Env 		[]string
 	Fset 		*token.FileSet
 	BuildFlags 	[]string
-	Focus 		*ParserFocus
+	Focus 		*Focus
 	Logger      LoggerCLI
 	LogFlags 	uint64
 }
@@ -91,9 +91,9 @@ the library needs to dynamically create a new `LoggerCLI` instance
 
 Sometimes, you will want to parse the `go` code but iterate only over some specific thing. You can parse a 
 package that contains many files, but just want to iterate over a specific file, for example. To do it, you 
-must give a `*ParserFocus` to the `Config`, at `*GoParser` creation time.
+must give a `*Focus` to the `Config`, at `*GoParser` creation time.
 
-The `root` package exports three functions that you can use to create a new `*ParserFocus`:
+The `root` package exports three functions that you can use to create a new `*Focus`:
 
 ```go
 func FocusPackagePath(packagePath string) *Focus { ... }
@@ -101,9 +101,13 @@ func FocusFilePath(filePath string) *Focus { ... }
 func FocusTypeName(typeName string) *Focus { ... }
 ```
 
-:::note
-Currently, it's not possible to combine multiple focuses. If you want to filter packages and types, you will have
-to choose one of them. If you need multiple focuses, please [let me know](https://github.com/mathbalduino/go-codegen/issues/new)
+:::caution
+It's very important to note that the string received by the above functions is considered a `RegExp`. It's *not* a simple
+string. It means that if you pass the `"Input"` `string` to the `FocusTypeName` function, the following `typenames` will match:
+`InputStruct`, `Input`, `MyInputStruct`, etc
+
+If you want an exact match, use the `^` and `$` characters, that set the start/end of the string, respectively: `"^Input$"`. It is just
+an example, but you can use all the features that you would use inside a `regexp.MatchString()` method call
 :::
 
 Example: if you want to parse the `codeToParse.go` file, that contains 3 `structs`, but iterate only over the
@@ -143,6 +147,15 @@ func main() {
 
 With this `Config`, the iterator will skip every type name that's different from `"StructB"`.
 
+You can combine more than one `*Focus` using the `MergeFocus` function, exported by the root package:
+
+```go
+func MergeFocus(f1 *Focus, f2 *Focus) *Focus { ... }
+```
+
+This function will copy the first argument to a third `*Focus` and override it with the values of the second one. This
+way, you can have a `*Focus` that filters by `typename` and `package`, simultaneously, for example.
+
 ## Iterate interfaces
 
 After the `*GoParser` instantiation (and code parsing), you can call the method below to iterate over `interfaces`:
@@ -151,8 +164,16 @@ After the `*GoParser` instantiation (and code parsing), you can call the method 
 // just an alias
 type InterfacesIterator = func(interface_ *types.TypeName, logger LoggerCLI) error
 
-func (p *GoParser) IterateInterfaces(callback InterfacesIterator) error { ... }
+func (p *GoParser) IterateInterfaces(callback InterfacesIterator, optionalLogger ...LoggerCLI) error { ... }
 ```
+
+:::note
+Note that you have the option to give a new `LoggerCLI` instance, at the moment you call `IterateInterfaces`. It's very
+useful when you're using the `beautify` package, from [go-log](https://mathbalduino.com.br/go-log), and want to customize
+the log display
+
+You can completely omit it (since it is a variadic), in which case the logger of the `*GoParser` instance will be used instead
+:::
 
 With this method, you pass a callback function that will be executed once for every `interface` type inside the
 parsed code:
@@ -227,8 +248,16 @@ After the `*GoParser` instantiation (and code parsing), you can call the method 
 // just an alias
 type StructsIterator = func(struct_ *types.TypeName, logger LoggerCLI) error
 
-func (p *GoParser) IterateStructs(callback StructsIterator) error { ... }
+func (p *GoParser) IterateStructs(callback StructsIterator, optionalLogger ...LoggerCLI) error { ... }
 ```
+
+:::note
+Note that you have the option to give a new `LoggerCLI` instance, at the moment you call `IterateInterfaces`. It's very
+useful when you're using the `beautify` package, from [go-log](https://mathbalduino.com.br/go-log), and want to customize
+the log display
+
+You can completely omit it (since it is a variadic), in which case the logger of the `*GoParser` instance will be used instead
+:::
 
 With this method, you pass a callback function that will be executed once for every `struct` type inside the
 parsed code:

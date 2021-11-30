@@ -7,12 +7,12 @@ sidebar_position: 3
 The library comes with some builtin functions that you can use to ease your code generation:
 
 ```go
-func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named), logger LoggerCLI) { ... }
-func ResolveTypeIdentifier(t types.Type, pkgImports GoImports, logger LoggerCLI) string { ... }
+func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named)) error { ... }
+func ResolveTypeIdentifier(t types.Type, pkgImports GoImports) (string, error) { ... }
 func IdentifierToAsciiTypeName(typeIdentifier string) string { ... }
 func IdentifierToTypeName(typeIdentifier string) string { ... }
 func ObjectIsAccessible(obj types.Object, fromPackagePath string, logger LoggerCLI) bool { ... }
-func TypeIsAccessible(t types.Type, fromPackagePath string, logger LoggerCLI) bool { ... }
+func TypeIsAccessible(t types.Type, fromPackagePath string) (bool, error) { ... }
 ```
 
 These functions are a selection of functions that I always implement when I'm generating code in another libraries.
@@ -27,7 +27,7 @@ via the callback arguments
 ## CallbackOnNamedType
 
 ```go
-func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named), logger LoggerCLI) { ... }
+func CallbackOnNamedType(fieldType types.Type, callback func(obj *types.Named)) error { ... }
 ```
 
 This function will call the `callback` argument whenever it encounters some `NamedType` (if you don't know what it is,
@@ -41,7 +41,7 @@ iterate over its `fields`/`methods`. The `callback` can be called more than just
 ## ResolveTypeIdentifier
 
 ```go
-func ResolveTypeIdentifier(type_ types.Type, pkgImports GoImports, logger LoggerCLI) string { ... }
+func ResolveTypeIdentifier(type_ types.Type, pkgImports GoImports) (string, error) { ... }
 ```
 
 This function will recursively iterate over the `type_` argument, building its `string` identifier. At the end of its
@@ -102,7 +102,7 @@ accessible within the package `pkgA`, even being private, because it is the same
 ## TypeIsAccessible
 
 ```go
-func TypeIsAccessible(t types.Type, fromPackagePath string, logger LoggerCLI) bool { ... }
+func TypeIsAccessible(t types.Type, fromPackagePath string, logger LoggerCLI) (bool, error) { ... }
 ```
 
 Very similar to the `ObjectIsAccessible` function, but with `types.Type` instead of `types.Object`.
