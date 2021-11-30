@@ -6,14 +6,14 @@ const signatureTmpl = `
 ||
 || %s
 ||
-|| File generated using github.com/mathbalduino/go-codegen
+|| File generated using %s %s
 || by Matheus Leonel Balduino
 ||
 || Everywhere, under @mathbalduino:
 ||   GitLab:    @mathbalduino
 ||   Instagram: @mathbalduino
 ||   Twitter:   @mathbalduino
-||   WebSite:   mathbalduino.com.br/go-codegen
+||   WebSite:   mathbalduino.com.br/%s
 ||
 `
 
