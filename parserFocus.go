@@ -6,7 +6,11 @@ import (
 )
 
 // FocusPackagePath will tell the parser to look for a
-// specific package
+// specific package.
+//
+// The given string will be directly forwarded to a
+// regexp.MatchString call, so it should represent a
+// go regular expression.
 //
 // Note that the packagePath argument refers to the import
 // path to the target package, not the package name
@@ -19,7 +23,11 @@ func FocusPackagePath(packagePath string) *Focus {
 }
 
 // FocusFilePath will tell the parser to look for a
-// specific file, based on it's ABSOLUTE path
+// specific file, based on it's ABSOLUTE path.
+//
+// The given string will be directly forwarded to a
+// regexp.MatchString call, so it should represent a
+// go regular expression.
 func FocusFilePath(filePath string) *Focus {
 	return &Focus{
 		nil,
@@ -29,7 +37,11 @@ func FocusFilePath(filePath string) *Focus {
 }
 
 // FocusTypeName will tell the parser to look for a
-// specific GO typename
+// specific GO typename.
+//
+// The given string will be directly forwarded to a
+// regexp.MatchString call, so it should represent a
+// go regular expression.
 func FocusTypeName(typeName string) *Focus {
 	return &Focus{
 		nil,
