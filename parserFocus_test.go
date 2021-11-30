@@ -66,54 +66,75 @@ func TestParserFocus(t *testing.T) {
 			t.Fatalf("Expected to be true")
 		}
 	})
-	t.Run("When PackagePaths are being focused, the other focuses should be ignored", func(t *testing.T) {
+	t.Run("If the focus is not on PackagePath, then it should always return true", func(t *testing.T) {
 		str := "focusStr"
-		p := &Focus{
-			packagePath: &str,
+		p := &Focus{filePath: &str}
+		if !p.is(focusPackagePath, str) {
+			t.Fatalf("Expected to be true")
 		}
-		if p.is(focusPackagePath, "---") {
+	})
+	t.Run("If the packagePath is set, should check the regexp", func(t *testing.T) {
+		str := "focusStr"
+		strRegexp := "^" + str + "$"
+		p := &Focus{packagePath: &strRegexp}
+		if p.is(focusPackagePath, "anythingElse") {
+			t.Fatalf("Expected to be false")
+		}
+		if p.is(focusPackagePath, str+"someSuffix") {
+			t.Fatalf("Expected to be false")
+		}
+		if p.is(focusPackagePath, "somePrefix"+str) {
 			t.Fatalf("Expected to be false")
 		}
 		if !p.is(focusPackagePath, str) {
 			t.Fatalf("Expected to be true")
 		}
-
-		// This focus is in packagePaths, so the other comparisons should always return true
-		if !p.is(focusFilePath, str) || !p.is(focusTypeName, str) {
+	})
+	t.Run("If the focus is not on FilePath, then it should always return true", func(t *testing.T) {
+		str := "focusStr"
+		p := &Focus{packagePath: &str}
+		if !p.is(focusFilePath, str) {
 			t.Fatalf("Expected to be true")
 		}
 	})
-	t.Run("When FilePaths are being focused, the other focuses should be ignored", func(t *testing.T) {
+	t.Run("If the filePath is set, should check the regexp", func(t *testing.T) {
 		str := "focusStr"
-		p := &Focus{
-			filePath: &str,
+		strRegexp := "^" + str + "$"
+		p := &Focus{filePath: &strRegexp}
+		if p.is(focusFilePath, "anythingElse") {
+			t.Fatalf("Expected to be false")
 		}
-		if p.is(focusFilePath, "---") {
+		if p.is(focusFilePath, str+"someSuffix") {
+			t.Fatalf("Expected to be false")
+		}
+		if p.is(focusFilePath, "somePrefix"+str) {
 			t.Fatalf("Expected to be false")
 		}
 		if !p.is(focusFilePath, str) {
 			t.Fatalf("Expected to be true")
 		}
-
-		// This focus is in packagePaths, so the other comparisons should always return true
-		if !p.is(focusPackagePath, str) || !p.is(focusTypeName, str) {
-			t.Fatalf("Expected to be true")
-		}
 	})
-	t.Run("When TypeNames are being focused, the other focuses should be ignored", func(t *testing.T) {
+	t.Run("If the focus is not on TypeName, then it should always return true", func(t *testing.T) {
 		str := "focusStr"
-		p := &Focus{
-			typeName: &str,
-		}
-		if p.is(focusTypeName, "---") {
-			t.Fatalf("Expected to be false")
-		}
+		p := &Focus{packagePath: &str}
 		if !p.is(focusTypeName, str) {
 			t.Fatalf("Expected to be true")
 		}
-
-		// This focus is in packagePaths, so the other comparisons should always return true
-		if !p.is(focusPackagePath, str) || !p.is(focusFilePath, str) {
+	})
+	t.Run("If the typeName is set, should check the regexp", func(t *testing.T) {
+		str := "focusStr"
+		strRegexp := "^" + str + "$"
+		p := &Focus{typeName: &strRegexp}
+		if p.is(focusTypeName, "anythingElse") {
+			t.Fatalf("Expected to be false")
+		}
+		if p.is(focusTypeName, str+"someSuffix") {
+			t.Fatalf("Expected to be false")
+		}
+		if p.is(focusTypeName, "somePrefix"+str) {
+			t.Fatalf("Expected to be false")
+		}
+		if !p.is(focusTypeName, str) {
 			t.Fatalf("Expected to be true")
 		}
 	})
@@ -123,14 +144,80 @@ func TestParserFocus(t *testing.T) {
 		go func() {
 			defer func() {
 				if e := recover(); e == nil {
-					t.Logf("It was expected to panic")
-					t.Fail()
+					c <- false
+				} else {
+					c <- true
 				}
-				c <- true
 			}()
-
 			p.is("unrecognizable focus", "any value")
 		}()
-		<-c
+		if !<-c {
+			t.Logf("It was expected to panic")
+			t.Fail()
+		}
+	})
+	t.Run("MergeFocus should copy all the values from the second argument, overriding the first", func(t *testing.T) {
+		str1, str2 := "str_one", "str_two"
+		f1 := &Focus{
+			packagePath: &str1,
+			filePath:    &str1,
+			typeName:    &str1,
+		}
+		t.Run("Override packagePath only", func(t *testing.T) {
+			f2 := &Focus{packagePath: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str2 {
+				t.Fatalf("packagePath was expected to be overriden")
+			}
+			if f3.filePath != &str1 {
+				t.Fatalf("filePath was not expected to change")
+			}
+			if f3.typeName != &str1 {
+				t.Fatalf("typeName was not expected to change")
+			}
+		})
+		t.Run("Override filePath only", func(t *testing.T) {
+			f2 := &Focus{filePath: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str1 {
+				t.Fatalf("packagePath was not expected to change")
+			}
+			if f3.filePath != &str2 {
+				t.Fatalf("filePath was expected to be overriden")
+			}
+			if f3.typeName != &str1 {
+				t.Fatalf("typeName was not expected to change")
+			}
+		})
+		t.Run("Override typeName only", func(t *testing.T) {
+			f2 := &Focus{typeName: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str1 {
+				t.Fatalf("packagePath was not expected to change")
+			}
+			if f3.filePath != &str1 {
+				t.Fatalf("filePath was not expected to change")
+			}
+			if f3.typeName != &str2 {
+				t.Fatalf("typeName was expected to be overriden")
+			}
+		})
+		t.Run("Override all fields", func(t *testing.T) {
+			f2 := &Focus{
+				packagePath: &str2,
+				filePath:    &str2,
+				typeName:    &str2,
+			}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str2 {
+				t.Fatalf("packagePath was expected to be overriden")
+			}
+			if f3.filePath != &str2 {
+				t.Fatalf("filePath was expected to be overriden")
+			}
+			if f3.typeName != &str2 {
+				t.Fatalf("typeName was expected to be overriden")
+			}
+		})
 	})
 }

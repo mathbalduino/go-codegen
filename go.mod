@@ -3,7 +3,7 @@ module github.com/mathbalduino/go-codegen
 go 1.17
 
 require (
-	github.com/mathbalduino/go-log v1.2.0
+	github.com/mathbalduino/go-log v1.3.1
 	golang.org/x/tools v0.1.7
 )
 

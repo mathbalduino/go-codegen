@@ -20,10 +20,17 @@ func TestSourceCode(t *testing.T) {
 	t.Run("Should add imports", func(t *testing.T) {
 		f := &TsFile{privateImports: tsImports.New()}
 		f.privateImports.AddNamedImport("NamedA", "some/path")
-		headerTitle := "Header Title - LibName v1.0.4"
-		code := f.SourceCode(headerTitle)
+		code := f.SourceCode("")
 		if !strings.Contains(string(code), "import { NamedA } from 'some/path'") {
 			t.Fatalf("Missing imports")
+		}
+	})
+	t.Run("Should add code", func(t *testing.T) {
+		sourceCode := "example source code"
+		f := &TsFile{sourceCode: sourceCode, privateImports: tsImports.New()}
+		code := f.SourceCode("")
+		if !strings.Contains(string(code), sourceCode) {
+			t.Fatalf("Missing source code")
 		}
 	})
 }

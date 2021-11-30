@@ -4,25 +4,25 @@ import (
 	"go/types"
 )
 
-type InterfacesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
+type InterfacesIterator = func(type_ *types.TypeName, logger LoggerCLI) error
 
 // IterateInterfaces will iterate only over the interfaces that are defined
 // inside the parsed go code
-func (p *GoParser) IterateInterfaces(callback InterfacesIterator) error {
-	typeNamesIterator := func(type_ *types.TypeName, parentLog LoggerCLI) error {
-		log := parentLog.Debug("Analysing *types.TypeName '%s'...", type_.Name())
+func (p *GoParser) IterateInterfaces(callback InterfacesIterator, optionalLogger ...LoggerCLI) error {
+	typeNamesIterator := func(type_ *types.TypeName, logger LoggerCLI) error {
+		logger = logger.Trace("Analysing *types.TypeName '%s'...", type_.Name())
 		_, isInterface := type_.Type().Underlying().(*types.Interface)
 		if !isInterface {
-			log.Debug("Skipped (not a interface)...")
+			logger.Trace("Skipped (not a interface)...")
 			return nil
 		}
 
-		e := callback(type_, log)
+		e := callback(type_, logger)
 		if e != nil {
 			return e
 		}
 
 		return nil
 	}
-	return p.iterateTypeNames(typeNamesIterator)
+	return p.iterateTypeNames(typeNamesIterator, optionalLogger...)
 }

@@ -5,29 +5,30 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type packageFilesIterator = func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error
+type packageFilesIterator = func(currFile *ast.File, filePkg *packages.Package, logger LoggerCLI) error
 
 // iteratePackageFiles will iterate over the files inside the parsed packages.
 //
 // Note that if the focus is set to filepath, it will iterate only over the specified
 // file
-func (p *GoParser) iteratePackageFiles(callback packageFilesIterator) error {
-	packagesIterator := func(pkg *packages.Package, parentLog LoggerCLI) error {
+func (p *GoParser) iteratePackageFiles(callback packageFilesIterator, optionalLogger ...LoggerCLI) error {
+	packagesIterator := func(pkg *packages.Package, logger LoggerCLI) error {
+		logger = logger.Trace("Iterating over package files...")
 		if len(pkg.Syntax) == 0 {
-			parentLog.Debug("Skipped (zero Syntax objects)...")
+			logger.Trace("Skipped (zero Syntax objects)...")
 			return nil
 		}
 
 		for _, currFile := range pkg.Syntax {
 			currFilePath := p.fileSet.File(currFile.Pos()).Name()
-			log := parentLog.Debug("Analysing *ast.File '%s'...", currFilePath)
+			logger = logger.Trace("Analysing *ast.File '%s'...", currFilePath)
 
 			if !p.focus.is(focusFilePath, currFilePath) {
-				log.Debug("Skipped (not the focus)...")
+				logger.Trace("Skipped (not the focus)...")
 				continue
 			}
 
-			e := callback(currFile, pkg, log)
+			e := callback(currFile, pkg, logger)
 			if e != nil {
 				return e
 			}
@@ -35,5 +36,5 @@ func (p *GoParser) iteratePackageFiles(callback packageFilesIterator) error {
 
 		return nil
 	}
-	return p.iteratePackages(packagesIterator)
+	return p.iteratePackages(packagesIterator, optionalLogger...)
 }

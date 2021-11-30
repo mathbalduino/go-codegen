@@ -6,43 +6,44 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type typeNamesIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
+type typeNamesIterator = func(type_ *types.TypeName, logger LoggerCLI) error
 
 // iterateTypeNames will iterate over all the typeNames inside the parsed files.
 //
 // Note that if the focus is set to typeName, it will iterate only over the specified
 // typeName
-func (p *GoParser) iterateTypeNames(callback typeNamesIterator) error {
-	packageFilesIterator := func(file *ast.File, typePkg *packages.Package, parentLog LoggerCLI) error {
+func (p *GoParser) iterateTypeNames(callback typeNamesIterator, optionalLogger ...LoggerCLI) error {
+	packageFilesIterator := func(file *ast.File, typePkg *packages.Package, logger LoggerCLI) error {
+		logger = logger.Trace("Iterating over file TypeNames...")
 		if len(file.Scope.Objects) == 0 {
-			parentLog.Debug("Skipped (zero objects)...")
+			logger.Trace("Skipped (zero objects)...")
 			return nil
 		}
 
 		for _, currObj := range file.Scope.Objects {
-			log := parentLog.Debug("Analysing *ast.Object '%s'...", currObj.Name)
+			logger = logger.Trace("Analysing *ast.Object '%s'...", currObj.Name)
 
 			typeSpec, isTypeSpec := currObj.Decl.(*ast.TypeSpec)
 			if !isTypeSpec {
-				log.Debug("Skipped (not a TypeSpec)...")
+				logger.Trace("Skipped (not a TypeSpec)...")
 				continue
 			}
 			typeObj, exists := typePkg.TypesInfo.Defs[typeSpec.Name]
 			if !exists {
-				log.Debug("Skipped (missing TypesInfo.Defs information)...")
+				logger.Trace("Skipped (missing TypesInfo.Defs information)...")
 				continue
 			}
 			typeName, isTypeName := typeObj.(*types.TypeName)
 			if !isTypeName {
-				log.Debug("Skipped (not a TypeName)...")
+				logger.Trace("Skipped (not a TypeName)...")
 				continue
 			}
 			if !p.focus.is(focusTypeName, typeName.Name()) {
-				log.Debug("Skipped (not the focus)...")
+				logger.Trace("Skipped (not the focus)...")
 				continue
 			}
 
-			e := callback(typeName, log)
+			e := callback(typeName, logger)
 			if e != nil {
 				return e
 			}
@@ -50,5 +51,5 @@ func (p *GoParser) iterateTypeNames(callback typeNamesIterator) error {
 
 		return nil
 	}
-	return p.iteratePackageFiles(packageFilesIterator)
+	return p.iteratePackageFiles(packageFilesIterator, optionalLogger...)
 }
