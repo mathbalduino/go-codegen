@@ -1,11 +1,8 @@
 package parser
 
 import (
-	"github.com/mathbalduino/go-log/loggerCLI"
 	"golang.org/x/tools/go/packages"
 )
-
-type LoggerCLI = loggerCLI.LoggerCLI
 
 type packagesIterator = func(pkg *packages.Package, parentLog LoggerCLI) error
 
