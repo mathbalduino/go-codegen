@@ -57,6 +57,21 @@ func TestIterateTypeNames(t *testing.T) {
 		}
 	}
 
+	t.Run("Should forward the optionalLogger, if provided, to the iteratePackageFiles method (this test depends on the iteratePackageFiles forwarding its own optionalLogger to its callback)", func(t *testing.T) {
+		p := fakeTypeNames(nil)
+		mock := &mockLoggerCLI{}
+		mock.mockTrace = func(string, ...interface{}) LoggerCLI { return mock }
+		e := p.iterateTypeNames(func(type_ *types.TypeName, logger LoggerCLI) error {
+			m, isMock := logger.(*mockLoggerCLI)
+			if !isMock || m != mock {
+				t.Fatalf("The LoggerCLI given to the callback is not the expected one")
+			}
+			return nil
+		}, mock)
+		if e != nil {
+			t.Fatalf("Expected to be nil")
+		}
+	})
 	t.Run("Should return nil errors when there are no Scope.Objects to iterate", func(t *testing.T) {
 		p := fakeTypeNames(nil)
 		p.pkgs[0].Syntax[0].Scope.Objects = map[string]*ast.Object{}

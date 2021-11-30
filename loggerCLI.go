@@ -13,18 +13,12 @@ import (
 	"github.com/mathbalduino/go-log/loggerCLI"
 )
 
-// Exports some LoggerCLI things, to avoid forcing the user
+// Exports some minimal LoggerCLI api, to avoid forcing the user
 // of go-codegen to directly depend on go-log
 
 type LoggerCLI = loggerCLI.LoggerCLI
 
-var NewLoggerCLI = loggerCLI.New
-var ParseLogLevel = loggerCLI.ParseLogLevel
-var ValidateLogLevels = loggerCLI.ValidateLogLevels
-
 const (
-	LogLevelsValues = loggerCLI.LogLevelsValues
-
 	// LogTrace is a flag that if used will enable
 	// Trace logs
 	LogTrace = logger.LvlTrace

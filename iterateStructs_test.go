@@ -47,6 +47,22 @@ func TestIterateStructs(t *testing.T) {
 			fileSet: fileSet,
 		}
 	}
+
+	t.Run("Should forward the optionalLogger, if provided, to the iterateTypeNames method (this test depends on the iterateTypeNames forwarding its own optionalLogger to its callback)", func(t *testing.T) {
+		p := fakeTypeNames()
+		mock := &mockLoggerCLI{}
+		mock.mockTrace = func(string, ...interface{}) LoggerCLI { return mock }
+		e := p.IterateStructs(func(struct_ *types.TypeName, logger LoggerCLI) error {
+			m, isMock := logger.(*mockLoggerCLI)
+			if !isMock || m != mock {
+				t.Fatalf("The LoggerCLI given to the callback is not the expected one")
+			}
+			return nil
+		}, mock)
+		if e != nil {
+			t.Fatalf("Expected to be nil")
+		}
+	})
 	t.Run("Should return nil errors when there are no Structs to iterate", func(t *testing.T) {
 		p := fakeTypeNames()
 		// Remove the structs from the Objects map (see fakeScopeObjects above)

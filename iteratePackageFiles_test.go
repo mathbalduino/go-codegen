@@ -10,18 +10,46 @@ import (
 )
 
 func TestIteratePackageFiles(t *testing.T) {
-	t.Run("Should return nil errors when there are no Package.Syntax objects", func(t *testing.T) {
+	t.Run("Should forward the optionalLogger, if provided, to the iteratePackages method (this test depends on the iteratePackages forwarding its own optionalLogger to its callback)", func(t *testing.T) {
+		focusedFilePos, focusedFileSize := token.Pos(100), 200
+		focusedFile := "focusedFile"
+		fileSet := token.NewFileSet()
+		fileSet.AddFile(focusedFile, int(focusedFilePos), focusedFileSize)
+
+		mock := &mockLoggerCLI{}
+		mock.mockTrace = func(string, ...interface{}) LoggerCLI { return mock }
 		p := &GoParser{
-			pkgs: []*packages.Package{
-				{Syntax: []*ast.File{}},
-			},
+			pkgs:    []*packages.Package{{Syntax: []*ast.File{{Package: focusedFilePos}}}},
+			fileSet: fileSet,
+			logger:  loggerCLI.New(false, 0),
+		}
+
+		e := p.iteratePackageFiles(func(_ *ast.File, _ *packages.Package, logger LoggerCLI) error {
+			m, isMock := logger.(*mockLoggerCLI)
+			if !isMock || m != mock {
+				t.Fatalf("The LoggerCLI given to the callback is not the expected one")
+			}
+			return nil
+		}, mock)
+		if e != nil {
+			t.Fatalf("Expected to be nil")
+		}
+	})
+	t.Run("Should return nil errors when there are no Package.Syntax objects, without calling callback", func(t *testing.T) {
+		p := &GoParser{
+			pkgs:   []*packages.Package{{Syntax: []*ast.File{}}},
 			logger: loggerCLI.New(false, 0),
 		}
-		e := p.iteratePackageFiles(func(currFile *ast.File, filePkg *packages.Package, parentLog LoggerCLI) error {
+		calls := 0
+		e := p.iteratePackageFiles(func(*ast.File, *packages.Package, LoggerCLI) error {
+			calls += 1
 			return nil
 		})
 		if e != nil {
 			t.Fatalf("Expected to be nil")
+		}
+		if calls != 0 {
+			t.Fatalf("Callback was not expected to be called")
 		}
 	})
 	t.Run("Should skip files that are not the focus", func(t *testing.T) {

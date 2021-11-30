@@ -8,6 +8,21 @@ import (
 )
 
 func TestIteratePackages(t *testing.T) {
+	t.Run("Should use the optionalLogger, if provided, giving it to the callback", func(t *testing.T) {
+		mock := &mockLoggerCLI{}
+		mock.mockTrace = func(string, ...interface{}) LoggerCLI { return mock }
+		p := &GoParser{pkgs: []*packages.Package{{}}, logger: loggerCLI.New(false, 0)}
+		e := p.iteratePackages(func(_ *packages.Package, logger LoggerCLI) error {
+			m, isMock := logger.(*mockLoggerCLI)
+			if !isMock || m != mock {
+				t.Fatalf("The LoggerCLI given to the callback is not the expected one")
+			}
+			return nil
+		}, mock)
+		if e != nil {
+			t.Fatalf("Expected to be nil")
+		}
+	})
 	t.Run("Should return nil when there are no packages", func(t *testing.T) {
 		p := &GoParser{pkgs: nil, logger: loggerCLI.New(false, 0)}
 		e := p.iteratePackages(nil)

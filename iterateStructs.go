@@ -4,16 +4,16 @@ import (
 	"go/types"
 )
 
-type StructsIterator = func(type_ *types.TypeName, parentLog LoggerCLI) error
+type StructsIterator = func(type_ *types.TypeName, logger LoggerCLI) error
 
 // IterateStructs will iterate only over the structs that are defined inside
 // the parsed go code
-func (p *GoParser) IterateStructs(callback StructsIterator) error {
-	typeNamesIterator := func(type_ *types.TypeName, parentLog LoggerCLI) error {
-		log := parentLog.Debug("Analysing *types.TypeName '%s'...", type_.Name())
+func (p *GoParser) IterateStructs(callback StructsIterator, optionalLogger ...LoggerCLI) error {
+	typeNamesIterator := func(type_ *types.TypeName, log LoggerCLI) error {
+		log = log.Trace("Analysing *types.TypeName '%s'...", type_.Name())
 		_, isStruct := type_.Type().Underlying().(*types.Struct)
 		if !isStruct {
-			log.Debug("Skipped (not a struct)...")
+			log.Trace("Skipped (not a struct)...")
 			return nil
 		}
 
@@ -24,5 +24,5 @@ func (p *GoParser) IterateStructs(callback StructsIterator) error {
 
 		return nil
 	}
-	return p.iterateTypeNames(typeNamesIterator)
+	return p.iterateTypeNames(typeNamesIterator, optionalLogger...)
 }
