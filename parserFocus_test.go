@@ -156,7 +156,68 @@ func TestParserFocus(t *testing.T) {
 			t.Fail()
 		}
 	})
-	t.Run("MergeFocus should copy all the value from the second argument, overriding the first", func(t *testing.T) {
-
+	t.Run("MergeFocus should copy all the values from the second argument, overriding the first", func(t *testing.T) {
+		str1, str2 := "str_one", "str_two"
+		f1 := &Focus{
+			packagePath: &str1,
+			filePath:    &str1,
+			typeName:    &str1,
+		}
+		t.Run("Override packagePath only", func(t *testing.T) {
+			f2 := &Focus{packagePath: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str2 {
+				t.Fatalf("packagePath was expected to be overriden")
+			}
+			if f3.filePath != &str1 {
+				t.Fatalf("filePath was not expected to change")
+			}
+			if f3.typeName != &str1 {
+				t.Fatalf("typeName was not expected to change")
+			}
+		})
+		t.Run("Override filePath only", func(t *testing.T) {
+			f2 := &Focus{filePath: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str1 {
+				t.Fatalf("packagePath was not expected to change")
+			}
+			if f3.filePath != &str2 {
+				t.Fatalf("filePath was expected to be overriden")
+			}
+			if f3.typeName != &str1 {
+				t.Fatalf("typeName was not expected to change")
+			}
+		})
+		t.Run("Override typeName only", func(t *testing.T) {
+			f2 := &Focus{typeName: &str2}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str1 {
+				t.Fatalf("packagePath was not expected to change")
+			}
+			if f3.filePath != &str1 {
+				t.Fatalf("filePath was not expected to change")
+			}
+			if f3.typeName != &str2 {
+				t.Fatalf("typeName was expected to be overriden")
+			}
+		})
+		t.Run("Override all fields", func(t *testing.T) {
+			f2 := &Focus{
+				packagePath: &str2,
+				filePath:    &str2,
+				typeName:    &str2,
+			}
+			f3 := MergeFocus(f1, f2)
+			if f3.packagePath != &str2 {
+				t.Fatalf("packagePath was expected to be overriden")
+			}
+			if f3.filePath != &str2 {
+				t.Fatalf("filePath was expected to be overriden")
+			}
+			if f3.typeName != &str2 {
+				t.Fatalf("typeName was expected to be overriden")
+			}
+		})
 	})
 }
