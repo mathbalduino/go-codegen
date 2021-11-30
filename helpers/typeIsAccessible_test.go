@@ -1,58 +1,90 @@
 package helpers
 
 import (
-	"fmt"
-	parser "github.com/mathbalduino/go-codegen"
-	"github.com/mathbalduino/go-log/loggerCLI"
 	"go/types"
 	"testing"
 )
 
 func TestTypeIsAccessible(t *testing.T) {
 	t.Run("Basic types should always return true", func(t *testing.T) {
-		ok := TypeIsAccessible(types.Typ[1], "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(types.Typ[1], "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Recursively iterate over pointer elements type", func(t *testing.T) {
 		type_ := types.NewPointer(types.Typ[2])
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Recursively iterate over array elements type", func(t *testing.T) {
 		type_ := types.NewArray(types.Typ[2], 2)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Recursively iterate over slice elements type", func(t *testing.T) {
 		type_ := types.NewSlice(types.Typ[2])
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Recursively iterate over map elements and keys type", func(t *testing.T) {
 		type_ := types.NewMap(types.Typ[1], types.Typ[2])
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
+	t.Run("Recursively iterate over map element type, returning any errors", func(t *testing.T) {
+		type_ := types.NewMap(&fakeType{}, types.Typ[2])
+		_, e := TypeIsAccessible(type_, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
+		}
+	})
+	t.Run("Recursively iterate over map key type, returning any errors", func(t *testing.T) {
+		type_ := types.NewMap(types.Typ[1], &fakeType{})
+		_, e := TypeIsAccessible(type_, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
+		}
+	})
 	t.Run("Recursively iterate over chan elements type", func(t *testing.T) {
 		type_ := types.NewChan(types.SendRecv, types.Typ[2])
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Empty structs should always return true", func(t *testing.T) {
 		type_ := types.NewStruct([]*types.Var{}, nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -64,7 +96,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, pkg, "fieldB", types.Typ[1]),
 			types.NewVar(0, pkg, "FieldC", types.Typ[1]),
 		}, nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
@@ -76,7 +111,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, pkg, "FieldB", types.Typ[1]),
 			types.NewVar(0, pkg, "FieldC", types.Typ[1]),
 		}, nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -89,7 +127,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, pkg, "FieldC", types.Typ[1]),
 			types.NewVar(0, pkg, "fieldD", types.Typ[1]),
 		}, nil)
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -107,7 +148,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, pkg, "fieldB", namedType),
 			types.NewVar(0, pkg, "fieldC", types.Typ[1]),
 		}, nil)
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -125,14 +169,32 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, pkg, "fieldB", namedType),
 			types.NewVar(0, pkg, "fieldC", types.Typ[1]),
 		}, nil)
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
 	})
+	t.Run("Recursively check every struct field type, returning any errors", func(t *testing.T) {
+		pkg := types.NewPackage("pkgPath", "pkgName")
+		type_ := types.NewStruct([]*types.Var{
+			types.NewVar(0, pkg, "fieldA", types.Typ[1]),
+			types.NewVar(0, pkg, "fieldB", &fakeType{}),
+			types.NewVar(0, pkg, "fieldC", types.Typ[1]),
+		}, nil)
+		_, e := TypeIsAccessible(type_, pkg.Path())
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
+		}
+	})
 	t.Run("Empty tuples should always return true", func(t *testing.T) {
 		type_ := types.NewTuple()
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -143,7 +205,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", types.Typ[2]),
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -160,9 +225,23 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", namedType),
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
+		}
+	})
+	t.Run("Should iterate over every tuple element type, returning any errors", func(t *testing.T) {
+		type_ := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[1]),
+			types.NewVar(0, nil, "", &fakeType{}),
+			types.NewVar(0, nil, "", types.Typ[3]),
+		)
+		_, e := TypeIsAccessible(type_, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
 		}
 	})
 	t.Run("Signatures with at least one param type and one result type not accessible should return false", func(t *testing.T) {
@@ -183,9 +262,58 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
 		type_ := types.NewSignature(nil, params, results, false)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
+		}
+	})
+	t.Run("Should return any errors when recursively checking signature params", func(t *testing.T) {
+		pkg2 := types.NewPackage("pkgPath2", "pkgName2")
+		namedType := types.NewNamed(
+			types.NewTypeName(0, pkg2, "privateTypeName", nil),
+			types.Typ[1],
+			nil)
+
+		params := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[5]),
+			types.NewVar(0, nil, "", &fakeType{}),
+			types.NewVar(0, nil, "", types.Typ[2]),
+		)
+		results := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[1]),
+			types.NewVar(0, nil, "", namedType),
+			types.NewVar(0, nil, "", types.Typ[3]),
+		)
+		type_ := types.NewSignature(nil, params, results, false)
+		_, e := TypeIsAccessible(type_, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
+		}
+	})
+	t.Run("Should return any errors when recursively checking signature results", func(t *testing.T) {
+		pkg2 := types.NewPackage("pkgPath2", "pkgName2")
+		namedType := types.NewNamed(
+			types.NewTypeName(0, pkg2, "privateTypeName", nil),
+			types.Typ[1],
+			nil)
+
+		params := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[5]),
+			types.NewVar(0, nil, "", namedType),
+			types.NewVar(0, nil, "", types.Typ[2]),
+		)
+		results := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[1]),
+			types.NewVar(0, nil, "", &fakeType{}),
+			types.NewVar(0, nil, "", types.Typ[3]),
+		)
+		type_ := types.NewSignature(nil, params, results, false)
+		_, e := TypeIsAccessible(type_, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
 		}
 	})
 	t.Run("Signatures with one param type not accessible should return false", func(t *testing.T) {
@@ -206,7 +334,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
 		type_ := types.NewSignature(nil, params, results, false)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
@@ -229,7 +360,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
 		type_ := types.NewSignature(nil, params, results, false)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
@@ -246,7 +380,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewVar(0, nil, "", types.Typ[3]),
 		)
 		type_ := types.NewSignature(nil, params, results, false)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -256,7 +393,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewTypeName(0, nil, "someTypeName", nil),
 			types.Typ[1],
 			nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -267,7 +407,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewTypeName(0, pkg, "someTypeName", nil),
 			types.Typ[1],
 			nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
@@ -278,7 +421,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewTypeName(0, pkg, "SomeTypeName", nil),
 			types.Typ[1],
 			nil)
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -289,7 +435,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewTypeName(0, pkg, "someTypeName", nil),
 			types.Typ[1],
 			nil)
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -298,7 +447,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewTypeName(0, pkg, "SomeTypeName", nil),
 			types.Typ[1],
 			nil)
-		ok = TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e = TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -306,7 +458,10 @@ func TestTypeIsAccessible(t *testing.T) {
 	t.Run("Empty interfaces should always return true", func(t *testing.T) {
 		type_ := types.NewInterfaceType(nil, nil)
 		type_.Complete()
-		ok := TypeIsAccessible(type_, "", loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, "")
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -327,7 +482,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewFunc(0, pkg, "privateMethod", types.NewSignature(nil, results, params, false)),
 		}, nil)
 		type_.Complete()
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
@@ -353,9 +511,33 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewFunc(0, pkg, "privateMethod", types.NewSignature(nil, results, params, false)),
 		}, nil)
 		type_.Complete()
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
+		}
+	})
+	t.Run("Should return any errors that occur when recursively checking methods signature", func(t *testing.T) {
+		params := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[5]),
+			types.NewVar(0, nil, "", &fakeType{}),
+		)
+		results := types.NewTuple(
+			types.NewVar(0, nil, "", types.Typ[1]),
+			types.NewVar(0, nil, "", types.Typ[3]),
+		)
+
+		pkg := types.NewPackage("pkgPath", "pkgName")
+		type_ := types.NewInterfaceType([]*types.Func{
+			types.NewFunc(0, pkg, "PublicMethod", types.NewSignature(nil, params, results, false)),
+			types.NewFunc(0, pkg, "privateMethod", types.NewSignature(nil, results, params, false)),
+		}, nil)
+		type_.Complete()
+		_, e := TypeIsAccessible(type_, pkg.Path())
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
 		}
 	})
 	t.Run("Interfaces with at least one private method from another package, should return false", func(t *testing.T) {
@@ -375,7 +557,10 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewFunc(0, pkg2, "privateMethod", types.NewSignature(nil, results, params, false)),
 		}, nil)
 		type_.Complete()
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if ok {
 			t.Fatalf("Expected to be false")
 		}
@@ -397,29 +582,18 @@ func TestTypeIsAccessible(t *testing.T) {
 			types.NewFunc(0, pkg, "privateMethod", types.NewSignature(nil, results, params, false)),
 		}, nil)
 		type_.Complete()
-		ok := TypeIsAccessible(type_, pkg.Path(), loggerCLI.New(false, 0))
+		ok, e := TypeIsAccessible(type_, pkg.Path())
+		if e != nil {
+			t.Fatalf("Error was expected to be nil")
+		}
 		if !ok {
 			t.Fatalf("Expected to be true")
 		}
 	})
 	t.Run("Not recognizable types should call Log.Fatal, panicking", func(t *testing.T) {
-		fatalCalls := 0
-		ch := make(chan bool)
-		go func() {
-			defer func() {
-				e := recover()
-				if e != nil && e.(error).Error() == fmt.Sprintf(unexpectedTypeMsg, (&fakeType{}).String()) {
-					fatalCalls += 1
-				}
-				ch <- true
-			}()
-
-			TypeIsAccessible(&fakeType{}, "", loggerCLI.New(false, parser.LogFatal))
-		}()
-
-		<-ch
-		if fatalCalls != 1 {
-			t.Fatalf("Expected to call panic one time")
+		_, e := TypeIsAccessible(&fakeType{}, "")
+		if e != UnexpectedTypeError {
+			t.Fatalf("Error is not the expected one")
 		}
 	})
 }
