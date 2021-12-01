@@ -21,29 +21,29 @@ func (p *GoParser) iterateTypeNames(callback typeNamesIterator, optionalLogger .
 		}
 
 		for _, currObj := range file.Scope.Objects {
-			logger = logger.Trace("Analysing *ast.Object '%s'...", currObj.Name)
+			currLogger := logger.Trace("Analysing *ast.Object '%s'...", currObj.Name)
 
 			typeSpec, isTypeSpec := currObj.Decl.(*ast.TypeSpec)
 			if !isTypeSpec {
-				logger.Trace("Skipped (not a TypeSpec)...")
+				currLogger.Trace("Skipped (not a TypeSpec)...")
 				continue
 			}
 			typeObj, exists := typePkg.TypesInfo.Defs[typeSpec.Name]
 			if !exists {
-				logger.Trace("Skipped (missing TypesInfo.Defs information)...")
+				currLogger.Trace("Skipped (missing TypesInfo.Defs information)...")
 				continue
 			}
 			typeName, isTypeName := typeObj.(*types.TypeName)
 			if !isTypeName {
-				logger.Trace("Skipped (not a TypeName)...")
+				currLogger.Trace("Skipped (not a TypeName)...")
 				continue
 			}
 			if !p.focus.is(focusTypeName, typeName.Name()) {
-				logger.Trace("Skipped (not the focus)...")
+				currLogger.Trace("Skipped (not the focus)...")
 				continue
 			}
 
-			e := callback(typeName, logger)
+			e := callback(typeName, currLogger)
 			if e != nil {
 				return e
 			}

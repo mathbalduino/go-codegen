@@ -23,21 +23,21 @@ func (p *GoParser) iteratePackages(callback packagesIterator, optionalLogger ...
 
 	logger = logger.Trace("Iterating over packages...")
 	for _, currPkg := range p.pkgs {
-		logger = logger.Trace("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
+		currLogger := logger.Trace("Analysing *packages.Package '%s %s'...", currPkg.Name, currPkg.PkgPath)
 
 		if len(currPkg.Errors) != 0 {
-			errorsLog := logger.Error("Package '%s %s' contain errors. Skipping it...", currPkg.Name, currPkg.PkgPath)
+			errorsLog := currLogger.Error("Package '%s %s' contain errors. Skipping it...", currPkg.Name, currPkg.PkgPath)
 			for _, currError := range currPkg.Errors {
 				errorsLog.Error(currError.Error())
 			}
 			continue
 		}
 		if !p.focus.is(focusPackagePath, currPkg.PkgPath) {
-			logger.Trace("Skipped (not the focus)...")
+			currLogger.Trace("Skipped (not the focus)...")
 			continue
 		}
 
-		e := callback(currPkg, logger)
+		e := callback(currPkg, currLogger)
 		if e != nil {
 			return e
 		}

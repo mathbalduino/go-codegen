@@ -21,14 +21,14 @@ func (p *GoParser) iteratePackageFiles(callback packageFilesIterator, optionalLo
 
 		for _, currFile := range pkg.Syntax {
 			currFilePath := p.fileSet.File(currFile.Pos()).Name()
-			logger = logger.Trace("Analysing *ast.File '%s'...", currFilePath)
+			currLogger := logger.Trace("Analysing *ast.File '%s'...", currFilePath)
 
 			if !p.focus.is(focusFilePath, currFilePath) {
-				logger.Trace("Skipped (not the focus)...")
+				currLogger.Trace("Skipped (not the focus)...")
 				continue
 			}
 
-			e := callback(currFile, pkg, logger)
+			e := callback(currFile, pkg, currLogger)
 			if e != nil {
 				return e
 			}
